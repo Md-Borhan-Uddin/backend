@@ -19,21 +19,20 @@ class ActivationEmail(BaseEmailMessage):
         return context
 
 
-class ConfirmationEmail(BaseEmailMessage):
-    template_name = "email/confirmation.html"
-
-
 class PasswordResetEmail(BaseEmailMessage):
     template_name = "email/password_reset.html"
 
     def get_context_data(self):
-        # PasswordResetEmail can be deleted
+        # ActivationEmail can be deleted
         context = super().get_context_data()
-
+        
         user = context.get("user")
-        context["uid"] = utils.encode_uid(user.pk)
+        context["uid"] = urlsafe_base64_encode(force_bytes(user.id))
         context["token"] = default_token_generator.make_token(user)
-        context["url"] = 'activate/{uid}/{token}'.format(**context)
+        context["url"] = 'password-reset/{uid}/{token}'.format(**context)
         return context
+
+
+
 
 

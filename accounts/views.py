@@ -1,5 +1,5 @@
 from rest_framework.response import Response
-from accounts.serializers import UserSerializer,EmailSerializer, UserCreateSerializer, UserLoginSerializer, UserEditSerializer
+from accounts.serializers import *
 from accounts.models import Admin,RealTor, User, UserType
 from rest_framework.generics import ListAPIView,ListCreateAPIView, RetrieveDestroyAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.views import APIView
@@ -14,7 +14,7 @@ from django.contrib.auth.tokens import default_token_generator, PasswordResetTok
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from RMS import settings
-from accounts.email import ActivationEmail
+from accounts.email import ActivationEmail, PasswordResetEmail
 
 # Create your views here.
 
@@ -95,7 +95,7 @@ class ResendEmail(APIView):
 
 
 
-class EmailVeryfi(APIView):
+class AcctiveAccount(APIView):
     def post(self,request,uid,token, *args, **kwargs):
         id = smart_str(urlsafe_base64_decode(uid))
         user = User.objects.get(id=id)
@@ -107,6 +107,43 @@ class EmailVeryfi(APIView):
                 user.is_active = True
                 user.save()
                 return Response({"message":"Account Activate",'user_type':user.user_type,'token':user_token})
+        except DjangoUnicodeDecodeError as identifire:
+            default_token_generator.check_token(user,token)
+            raise ValidationError("Token Is invalid or Expired")
+
+
+class SendPasswordResetEmail(APIView):
+    def post(self,request, *args, **kwargs):
+        print('data',request.data)
+        serializer = EmailSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        email = serializer.data.get('email')
+        
+        user = User.objects.filter(email=email)
+        if not user.exists():
+            return Response({"messages":"This Email Not Registred"}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        
+        context = {'user':user.first()}
+        PasswordResetEmail(request, context).send([user.first().email])
+
+        return Response({'message':'Email Send Successfully'})
+
+class ResetPassword(APIView):
+    def post(self,request,uid,token, *args, **kwargs):
+        id = smart_str(urlsafe_base64_decode(uid))
+        user = User.objects.get(id=id)
+        print(user)
+        user_token = get_tokens_for_user(user)
+        serializers = UserChangePasswordSerializer(data=request.data)
+        serializers.is_valid(raise_exception=True)
+        password = serializers.data.get('new_password')
+        try:
+            if not default_token_generator.check_token(user,token):
+                raise ValidationError("Token Is invalid or Expired")
+            if user is not None:
+                user.set_password(password)
+                user.save()
+                return Response({"message":"Password change Successfully"})
         except DjangoUnicodeDecodeError as identifire:
             default_token_generator.check_token(user,token)
             raise ValidationError("Token Is invalid or Expired")
@@ -144,10 +181,12 @@ class UserRetrieveDestroyAPIView(RetrieveDestroyAPIView):
 
 class LoginAPIView(APIView):
     def post(self, request, *args, **kwargs):
+        
         serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid():
-            username = serializer.data['username']
-            password = serializer.data['password']
+        if serializer.is_valid(raise_exception=True):
+            username = serializer.data.get('username')
+            password = serializer.data.get('password')
+            
             user = authenticate(username=username, password=password)
             
             if user is not None:
@@ -162,5 +201,21 @@ class LoginAPIView(APIView):
                 else:
                     return Response({"message":"Account Is Not Activate"},status=status.HTTP_404_NOT_FOUND)
             else:
-                return Response({"message":"Username or Password Invalid"},status=status.HTTP_404_NOT_FOUND)
+                return Response({"message":"Sorry wrong user name or password"},status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors)
+
+
+
+class UserChangepassword(APIView):
+    def post(self, request, *args, **kwargs):
+        
+        serializer = UserChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        new_password = serializer.data.get('new_password')
+        if new_password:
+            user = request.user
+            user.set_password(new_password)
+            user.save()
+            return Response({'message':'Password change Succesfully'})
+        return Response({'message':'Somethings Wrong'})

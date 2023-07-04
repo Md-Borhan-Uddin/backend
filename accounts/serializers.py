@@ -101,9 +101,33 @@ class UserCreateSerializer(UserCreateSerializer):
 
 
 class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField()
-    password = serializers.CharField()
+    username = serializers.CharField(max_length=20)
+    password = serializers.CharField(
+        style={'input_type':'password'}, max_length=20,
+        
+        )
+    # class Meta:
+    #     fields = ['username', 'password']
 
+class UserChangePasswordSerializer(serializers.Serializer):
+    new_password = serializers.CharField(
+        style={'input_type':'password'}, max_length=20,
+        
+    )
+    
+    confirm_password = serializers.CharField(
+        style={'input_type':'password'}, max_length=20,
+        
+    )
+
+    def validate(self, data):
+        confirm_password = data.get('confirm_password')
+        confirm_password = data.get('confirm_password')
+        if confirm_password != confirm_password:
+            raise serializers.ValidationError(detail={'message':'Password Don\'t match'})
+        return data
+
+    
 
 
 class EmailSerializer(serializers.Serializer):

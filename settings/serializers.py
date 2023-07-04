@@ -12,12 +12,6 @@ class CountrySerializer(serializers.ModelSerializer):
         model = Country
         fields = '__all__'
 
-    def validate_name(self, value):
-        if self.instance is not None and self.instance.name == value:
-            return value
-        if Country.objects.filter(name=value).exists():
-            raise serializers.ValidationError('City name already exists. Try another name.')
-        return value
     
     def create(self, validated_data):
         return super().create(validated_data)
@@ -40,7 +34,6 @@ class AssetSerializers(serializers.ModelSerializer):
     
     
     def create(self, validated_data):
-        print(validated_data)
         return super().create(validated_data)
     
 
@@ -65,12 +58,6 @@ class CitySerializer(serializers.ModelSerializer):
         fields = ['id','name','country','country_id']
 
 
-    def validate_name(self, value):
-        if self.instance is not None and self.instance.name == value:
-            return value
-        if City.objects.filter(name=value).exists():
-            raise serializers.ValidationError('City name already exists. Try another name.')
-        return value
 
     def create(self, validated_data):
         return super().create(validated_data)
@@ -101,12 +88,7 @@ class PackageSerializer(serializers.ModelSerializer):
                   ]
 
 
-    def validate_name(self, value):
-        if self.instance is not None and self.instance.name == value:
-            return value
-        if Package.objects.filter(name=value).exists():
-            raise serializers.ValidationError('Package name already exist Try another name')
-        return value
+   
 
     def create(self, validated_data):
         package = Package.objects.create(**validated_data)
@@ -138,7 +120,6 @@ class MembershipSerializer(serializers.ModelSerializer):
     package_id = serializers.IntegerField(write_only=True)
     package = PackageSerializer(read_only=True)
     user = UserSerializer(read_only=True)
-    # user_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Membership
@@ -146,21 +127,18 @@ class MembershipSerializer(serializers.ModelSerializer):
 
 
     def validat(self, data):
-        print(data.get('user'))
+        
         request = self.context.get('request')
-        pac = Package.objects.get(name=data.get('package_id'))
-        user = User.objects.get(id=data)
+        # pac = Package.objects.get(name=data.get('package_id'))
+        user = request.user
         if Membership.objects.filter(user=user, is_active=True).exists():
             raise serializers.ValidationError(f'You have an active membership that expired on {data["expaire_date"]}, Would like cancel it, and proceed with new membership')
         return data
 
     def create(self, validated_data):
-        package = Package.objects.get(id=validated_data.get('package_id'))
-        # validated_data.pop('expire_date')
-        # print(package)
-        # expire_date = 
+        
         request = self.context.get('request')
-        print(request.user)
+        
         return Membership.objects.create(user=request.user,**validated_data)
     
     

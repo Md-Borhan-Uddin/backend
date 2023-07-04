@@ -15,7 +15,7 @@ class CustomAuthentication(BaseBackend):
         count = cache.get(cache_key, 0)
         
         if count >= 3:
-            raise serializers.ValidationError(detail={"message":"Too many login attempts. Please try again 30 minutes later."})
+            raise serializers.ValidationError(detail={"message":"Sorry,We prevent you to login since you used all attempts"})
 
         user = UserModel.objects.filter(username=username).first()
         if user and user.check_password(password):
