@@ -95,8 +95,8 @@ class MembershipListCreateAPIView(ListCreateAPIView):
 
 
     def create(self, request, *args, **kwargs):
-        print(request.data)
-        serializer = MembershipSerializer(data=request.data)
+        
+        serializer = MembershipSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
             id = serializer.data.get('user_id')
             user = User.objects.get(id=2)

@@ -10,8 +10,7 @@ class UserType(models.TextChoices):
     REALTOR = 'RealTor','RealTor'
 
 class User(AbstractUser):
-    username = models.CharField(max_length=20, unique=True)
-    password = models.CharField(max_length=20,validators=[MinLengthValidator(8)])
+    
     middel_name = models.CharField(max_length=10, null=True, blank=True)
     email = models.EmailField(max_length=254)
     mobile_number = PhoneNumberField(region='SA')
@@ -20,7 +19,6 @@ class User(AbstractUser):
     is_realtor = models.BooleanField(default=False)
     image = models.ImageField(upload_to='profile', default='default.jpg')
 
-    USERNAME_FIELD = 'username'
 class AdminManager(models.Manager):
     def  get_queryset(self):
         return super().get_queryset().filter(user_type=UserType.ADMIN)
