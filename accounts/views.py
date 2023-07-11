@@ -71,6 +71,7 @@ class RealTorApiView(ListCreateAPIView):
             return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
 
+
 class ResendEmail(APIView):
     query = RealTor.objects.all()
     serializer_class = EmailSerializer

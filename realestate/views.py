@@ -7,6 +7,7 @@ from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveDest
 from .serializers import *
 from .models import *
 from django.core.exceptions import ObjectDoesNotExist
+from django.db.models import Count
 # Create your views here.
 
 class RealEstateTypeListCreateAPIView(ListCreateAPIView):
@@ -84,16 +85,28 @@ class RealestateDeleteAPIView(APIView):
         return Response({"message":"delete successfully"})
 
 
+class RealestateCount(APIView):
+    def get(self, request, *args, **kwargs):
+        country = RealEstate.objects.values('country').annotate(totalnumber=Count('country'))
+        city = RealEstate.objects.values('city').annotate(totalnumber=Count('city')) 
+        type = RealEstate.objects.values('type').annotate(totalnumber=Count('type'))
+        data = {
+            'country':country,
+            'city':city,
+            'type':type
+        }
+        return Response(data=data)
+
 
 class RealEstateAPI(APIView):
-    # permission_classes = [IsAuthenticated]
     def get(self, request,usertype, *args, **kwargs):
-        print(request.user)
+        
         obj = RealEstate.objects.all()
+        
         if usertype != UserType.ADMIN:
-            print('reltor',request.user.id)
+        
             obj = RealEstate.objects.filter(user = request.user.id)
-            print(obj)
+            
         
         serializer = RealEstateSerializer(obj, many = True, context = {"request":request})
         return Response(data=serializer.data)
@@ -137,6 +150,5 @@ class ScheduleMaintainesListAPIView(ListCreateAPIView):
 class ScheduleMaintainesRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = ScheduleMaintaines.objects.all()
     serializer_class = ScheduleMaintainesSerializer
-
 
 
