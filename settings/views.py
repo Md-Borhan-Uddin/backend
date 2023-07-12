@@ -9,6 +9,7 @@ from rest_framework.exceptions import ValidationError
 #own file import
 from settings.models import *
 from settings.serializers import *
+from .tasks import notification
 
 
 
@@ -106,14 +107,17 @@ class MembershipListCreateAPIView(ListCreateAPIView):
         return super().create(request, *args, **kwargs)
 
     def get_queryset(self):
+        notification()
         user = self.request.user
         if user.user_type == 'Admin':
             return Membership.objects.all()
         return Membership.objects.filter(user=user,is_pay=True,expire_date__gt=datetime.now())
 
+
 class ActiveMembershipList(ListAPIView):
     queryset = Membership.object.active()
     serializer_class = MembershipSerializer
+
 
 class InactiveMembershipList(ListAPIView):
     queryset = Membership.object.inactive()

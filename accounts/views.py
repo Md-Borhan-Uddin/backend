@@ -14,6 +14,7 @@ from django.contrib.auth.tokens import default_token_generator, PasswordResetTok
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
 from RMS import settings
+from utils.pagination import PaginationWithPageNumber
 from accounts.email import ActivationEmail, PasswordResetEmail
 
 # Create your views here.
@@ -29,7 +30,8 @@ def get_tokens_for_user(user):
     }
 
 
-class AdminListApiView(APIView):
+class AdminListApiView(APIView,):
+    
     def get(self,request, *args, **kwargs):
         qs = Admin.objects.all()
         user = UserCreateSerializer(qs, many=True)
@@ -48,6 +50,7 @@ class AdminListApiView(APIView):
 class RealTorApiView(ListCreateAPIView):
     queryset = RealTor.objects.all()
     serializer_class = UserCreateSerializer
+    pagination_class = PaginationWithPageNumber
 
     def get(self, request, id=None, *args, **kwargs):
         if id==None:
@@ -133,7 +136,7 @@ class ResetPassword(APIView):
     def post(self,request,uid,token, *args, **kwargs):
         id = smart_str(urlsafe_base64_decode(uid))
         user = User.objects.get(id=id)
-        print(user)
+        
         user_token = get_tokens_for_user(user)
         serializers = UserChangePasswordSerializer(data=request.data)
         serializers.is_valid(raise_exception=True)
@@ -154,16 +157,11 @@ class ResetPassword(APIView):
 
 
 class UserApiView(ListAPIView):
-    # queryset = User.objects.all()
+    queryset = User.objects.all()
     serializer_class = UserSerializer
+    pagination_class = PaginationWithPageNumber
     
-    def get_queryset(self):
-        
-        print(self.request.user)
-        # if self.request.user.user_type == UserType.ADMIN:
-            
-        #     return User.objects.all().exclude(id = self.request.user.id)
-        return User.objects.all()
+    
 
 class UpdateUserAPIView(UpdateAPIView):
     queryset = User.objects.all()

@@ -1,0 +1,16 @@
+{% load i18n %} 
+{% block subject %} 
+{% blocktrans %}scheduled maintenance on{{domain}}{% endblocktrans %} 
+{% endblock subject %} 
+{% block text_body %} 
+{% blocktrans %}Dear {{username}} ,, Scheduled maintenance for {{assert}} in {{realestate_name}} is due today, please update the maintenance status or change the maintenance date, from Modify Schedule Maintenance Feature{% endblocktrans %} 
+{% endblock text_body %} 
+
+{% block html_body %}
+<p>
+  {% blocktrans %}Dear {{username}} ,, Scheduled maintenance for {{assert}} in {{realestate_name}} is due today, please update the maintenance status or change the maintenance date, from Modify Schedule Maintenance Feature{% endblocktrans %}
+</p>
+
+
+
+{% endblock html_body %}

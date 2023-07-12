@@ -5,9 +5,12 @@ from rest_framework import status
 from accounts.models import UserType
 from rest_framework.generics import ListAPIView, ListCreateAPIView, RetrieveDestroyAPIView, RetrieveUpdateDestroyAPIView
 from .serializers import *
+from utils.pagination import PaginationWithPageNumber
 from .models import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
+from settings.models import Membership
+from settings.tasks import notification
 # Create your views here.
 
 class RealEstateTypeListCreateAPIView(ListCreateAPIView):
@@ -21,7 +24,6 @@ class RealEstateTypeRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
     serializer_class = RealEstateTypeSerializers
 
     def patch(self, request, *args, **kwargs):
-        print(request)
         return super().patch(request, *args, **kwargs)
 
 
@@ -113,18 +115,19 @@ class RealEstateAPI(APIView):
     
 
     def post(self, request, *args, **kwargs):
-        
-        serializer = RealEstateSerializer(data=request.data, context = {"request":request})
-        if serializer.is_valid():
-            re = serializer.save(location='dhaka')
-            
-            data = {
-                'message':"RealEstate Save Successfully",
+        if Membership.object.filter(user=request.user.id,expire_date__gt=datetime.now(),is_pay=True).exists():
+            serializer = RealEstateSerializer(data=request.data, context = {"request":request})
+            if serializer.is_valid():
+                re = serializer.save(location='dhaka')
                 
-            }
-            return Response(data,status=status.HTTP_201_CREATED)
+                data = {
+                    'message':"RealEstate Save Successfully",
+                    
+                }
+                return Response(data,status=status.HTTP_201_CREATED)
 
-        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(data={'message':'You dont have active membership'})
     
 class AssetByRealestate(APIView):
 
@@ -143,8 +146,20 @@ class AssetListAPIView(ListCreateAPIView):
     
 
 class ScheduleMaintainesListAPIView(ListCreateAPIView):
-    queryset = ScheduleMaintaines.objects.all()
+    # queryset = ScheduleMaintaines.objects.all()
     serializer_class = ScheduleMaintainesSerializer
+    pagination_class = PaginationWithPageNumber
+    
+
+    def get_queryset(self):
+        notification()
+        obj = None
+        user = self.request.user
+        obj = ScheduleMaintaines.objects.all()
+        if user.user_type!='Admin':
+            obj = ScheduleMaintaines.objects.filter(real_estate__user=user)
+        
+        return obj
 
 
 class ScheduleMaintainesRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):

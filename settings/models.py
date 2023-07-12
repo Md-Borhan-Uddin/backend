@@ -1,5 +1,6 @@
 # from django.utils.timezone import datetime
 from django.db import models
+from django.db.models.query import QuerySet
 from realestate.models import AssertBrand, AssertType
 from accounts.models import User
 from datetime import timedelta, datetime
@@ -63,11 +64,20 @@ class Package(models.Model):
         return self.name
 
 
-class MembershipManager(models.Manager):
+class MembershipQuery(models.QuerySet):
     def active(self):
         return self.filter(expire_date__gt=datetime.now(),is_pay=True)
     def inactive(self):
         return self.filter(expire_date__lt=datetime.now(),is_pay=True)
+
+
+class MembershipManager(models.Manager):
+    def get_queryset(self) -> QuerySet:
+        return MembershipQuery(model=self.model, using=self._db)
+    def active(self):
+        return self.get_queryset().active()
+    def inactive(self):
+        return self.get_queryset().inactive()
 
 
 class Membership(models.Model):

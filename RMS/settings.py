@@ -10,10 +10,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-471!1w@$r3s_wl@#5hv%#n5nt4swnyc$=r1r(z=e2x=ofnpq#u'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG')
 
 ALLOWED_HOSTS = ['api.daimn.com', 'www.api.daimn.com','0.0.0.0', '127.0.0.1']
 
@@ -21,6 +21,7 @@ ALLOWED_HOSTS = ['api.daimn.com', 'www.api.daimn.com','0.0.0.0', '127.0.0.1']
 # Application definition
 
 INSTALLED_APPS = [
+    'django_crontab',
     'accounts.apps.AccountsConfig',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -53,7 +54,9 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'RMS.urls'
+
 AUTH_USER_MODEL = 'accounts.User'
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -72,6 +75,11 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'RMS.wsgi.application'
 
+
+#corn job
+CORNJOBS = [
+    ('* */24 * * *', 'realestate.tasks.maintains_notification')
+]
 
 #django phone number settings
 PHONENUMBER_DB_FORMAT = 'NATIONAL'
@@ -151,7 +159,9 @@ REST_FRAMEWORK = {
         # 'accounts.authentication.CustomAuthentication',
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'PAGE_SIZE': 10
     
 }
 
@@ -201,26 +211,26 @@ SIMPLE_JWT = {
 DOMAIN = 'localhost:5173'
 
 
-DJOSER = {
+# DJOSER = {
     
-    "USER_CREATE_PASSWORD_RETYPE": True,
-    "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
-    "SEND_CONFIRMATION_EMAIL": True,
-    "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
-    "SET_PASSWORD_RETYPE": True,
-    "PASSWORD_RESET_CONFIRM_RETYPE": True,
-    "ACTIVATION_URL": "activate/{uid}/{token}",
-    "SEND_ACTIVATION_EMAIL": True,
-    "SERIALIZERS": {
-        "user_create": "accounts.serializers.UserCreateSerializer",
-        "user": "accounts.serializers.UserSerializer",
-        "current_user": "accounts.serializers.UserSerializer",
-        # "user_delete": "djoser.serializers.UserDeleteSerializer",
-    },
-    "EMAIL":{
-        'activation':'RSM.email.ActivationEmail',
-    }
-}
+#     "USER_CREATE_PASSWORD_RETYPE": True,
+#     "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
+#     "SEND_CONFIRMATION_EMAIL": True,
+#     "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
+#     "SET_PASSWORD_RETYPE": True,
+#     "PASSWORD_RESET_CONFIRM_RETYPE": True,
+#     "ACTIVATION_URL": "activate/{uid}/{token}",
+#     "SEND_ACTIVATION_EMAIL": True,
+#     "SERIALIZERS": {
+#         "user_create": "accounts.serializers.UserCreateSerializer",
+#         "user": "accounts.serializers.UserSerializer",
+#         "current_user": "accounts.serializers.UserSerializer",
+#         # "user_delete": "djoser.serializers.UserDeleteSerializer",
+#     },
+#     "EMAIL":{
+#         'activation':'RSM.email.ActivationEmail',
+#     }
+# }
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
@@ -232,8 +242,17 @@ CORS_ALLOWED_ORIGINS = [
 
 # email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = "smtp-relay.brevo.com"
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = "borhanpayoneer@gmail.com"
-EMAIL_HOST_PASSWORD = "djVFyWN0qE7b9nB4"
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
+
+
+#twillio settings
+TWILLIO_SID = os.environ.get('TWILLIO_SID')
+TWILLIO_TOKEN = os.environ.get('TWILLIO_TOKEN')
+
+#logger settings
+

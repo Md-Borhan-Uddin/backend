@@ -65,3 +65,14 @@ class RealTor(User):
 
 
 
+
+class Notification(models.Model):
+    subject = models.CharField(max_length=250, null=True, blank=True)
+    body = models.TextField()
+    is_read = models.BooleanField(default=False)
+    create = models.DateTimeField(auto_now=False, auto_now_add=True)
+    to = models.ForeignKey(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f'notification for {self.to}'
+    
