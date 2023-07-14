@@ -130,8 +130,8 @@ class MembershipRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
     
 
 
-    # def get_queryset(self):
-    #     user = self.request.user
-    #     id = self.kwargs.get('pk')
-    #     print(self.kwargs)
-    #     return Membership.objects.filter(user=user,is_pay=True,expire_date__lt=datetime.now())
+    def get_queryset(self):
+        user = self.request.user
+        id = self.kwargs.get('pk')
+        print(self.kwargs)
+        return Membership.objects.filter(user=user,is_pay=True,expire_date__lt=datetime.now())
