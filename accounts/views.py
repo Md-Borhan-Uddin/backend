@@ -102,7 +102,10 @@ class ResendEmail(APIView):
 class AcctiveAccount(APIView):
     def post(self,request,uid,token, *args, **kwargs):
         id = smart_str(urlsafe_base64_decode(uid))
-        user = User.objects.get(id=id)
+        try:
+            user = User.objects.get(id=id)
+        except:
+            return Response({"message":"User dose not Exist"}, status=status.HTTP_404_NOT_FOUND)
         user_token = get_tokens_for_user(user)
         try:
             if not default_token_generator.check_token(user,token):
