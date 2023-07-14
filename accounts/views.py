@@ -166,12 +166,16 @@ class UserApiView(ListAPIView):
 class UpdateUserAPIView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserEditSerializer
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
 
 
 class UserRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+    # def get_queryset(self):
+    #     print(self.request)
+    #     return super().get_queryset()
 
     def get_object(self):
         request = self.request

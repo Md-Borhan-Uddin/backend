@@ -99,6 +99,14 @@ class RealestateCount(APIView):
         }
         return Response(data=data)
 
+class RealEstateRetrieveDestroyAPIView(RetrieveDestroyAPIView):
+    queryset = RealEstate.objects.all()
+    serializer_class = RealEstateSerializer
+
+    # def get_queryset(self):
+    #     print(self.request)
+    #     return super().get_queryset()
+
 
 class RealEstateAPI(APIView):
     def get(self, request,usertype, *args, **kwargs):

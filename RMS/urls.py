@@ -11,10 +11,11 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('realestate.urls')),
     path('api/', include('settings.urls')),
-    path('api/refresh-token/', TokenRefreshView.as_view()),
-    path('api/auth/', include('djoser.urls')),
-    path('api/auth/', include('djoser.urls.jwt')),
-]+static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+    path('api/refresh-token/', TokenRefreshView.as_view())
+]
+
+urlpatterns +=static(settings.MEDIA_URL, document_root = settings.MEDIA_ROOT)
+urlpatterns +=static(settings.STATIC_URL, document_root = settings.STATIC_ROOT)
 
 
 
