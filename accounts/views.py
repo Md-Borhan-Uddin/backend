@@ -88,12 +88,12 @@ class ResendEmail(APIView):
                 return Response({"messages":"This Email Not Registred"}, status=status.HTTP_406_NOT_ACCEPTABLE)
             if user[0].is_active:
                 return Response({"messages":"You Are already Active User"}, status=status.HTTP_409_CONFLICT)
-            context = {'user':user}
-            ActivationEmail(request, context).send([user.email])
+            context = {'user':user[0]}
+            ActivationEmail(request, context).send([user[0].email])
             
             return Response({"messages":"To active Account Veryfi Your Email. Send Email To active Account"}, status=status.HTTP_200_OK)
         else:
-            print(serializer.errors)
+            
             return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
 
