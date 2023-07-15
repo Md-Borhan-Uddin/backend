@@ -5,7 +5,7 @@ from accounts.models import User
 # Create your models here.
 
 class AbstractCategory(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, unique=True)
     is_active = models.BooleanField(default=True)
     create = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)

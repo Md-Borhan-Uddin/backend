@@ -9,12 +9,7 @@ class RealEstateTypeSerializers(serializers.ModelSerializer):
 
     class Meta:
         model = RealEstateType
-        fields = ['id','name']
-    
-    def validate_name(self, value):
-        if RealEstateType.objects.filter(name=value).exists():
-            raise serializers.ValidationError('RealEstateType name already exist Try another name')
-        return value
+        fields = ['id','name','is_active']
     
 
     def create(self, validated_data):
@@ -23,6 +18,7 @@ class RealEstateTypeSerializers(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
         
         instance.save()
         return instance
