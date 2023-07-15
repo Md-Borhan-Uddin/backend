@@ -112,9 +112,11 @@ class MembershipListCreateAPIView(ListCreateAPIView):
                 raise serializers.ValidationError(f'You have an active membership that expired on, Would like cancel it, and proceed with new membership')
         
         return super().create(request, *args, **kwargs)
+    
+    
 
     def get_queryset(self):
-        notification()
+        # notification()
         user = self.request.user
         if user.user_type == 'Admin':
             return Membership.objects.all()

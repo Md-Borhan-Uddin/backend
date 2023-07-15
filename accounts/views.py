@@ -185,6 +185,10 @@ class UpdateUserAPIView(UpdateAPIView):
         print(self.request.data)
         return super().get_queryset()
 
+class UserDestroyAPIView(DestroyAPIView):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+
 
 class UserRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     queryset = User.objects.all()

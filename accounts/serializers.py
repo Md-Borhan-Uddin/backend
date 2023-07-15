@@ -23,7 +23,7 @@ class UserEditSerializer(serializers.ModelSerializer):
     mobile_number = PhoneNumberField(region='SA')
     class Meta:
         model = User
-        fields = ['username','first_name','last_name','image','middel_name','email','mobile_number', 'is_active']
+        fields = ['id','username','first_name','last_name','image','middel_name','email','mobile_number', 'is_active']
 
     def update(self,instance, validated_data):
         print(validated_data)

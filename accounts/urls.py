@@ -2,7 +2,7 @@ from django.urls import path
 from accounts.views import (
     AdminListApiView, RealTorApiView, 
     UserApiView, AcctiveAccount, LoginAPIView, 
-    UpdateUserAPIView,UserRetrieveDestroyAPIView,
+    UpdateUserAPIView,UserRetrieveDestroyAPIView,UserDestroyAPIView,
     ResendEmail, UserChangepassword, SendPasswordResetEmail, ResetPassword
     )
 
@@ -13,7 +13,7 @@ urlpatterns = [
     path('realtor/registration/', RealTorApiView.as_view()),
     path("update-user/<str:username>/", RealTorApiView.as_view(), name="user_update"),
     path('user-edit/<str:username>/', UpdateUserAPIView.as_view()),
-    path("user-delete/<int:pk>/", UserRetrieveDestroyAPIView.as_view(), name="user_delete"),
+    path("user-delete/<int:pk>/", UserDestroyAPIView.as_view(), name="user_delete"),
     path('user/', UserRetrieveDestroyAPIView.as_view()),
     path('all-user/', UserApiView.as_view()),
     path("password-change/", UserChangepassword.as_view(), name="password_change"),

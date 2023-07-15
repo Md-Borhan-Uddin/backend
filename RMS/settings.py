@@ -212,26 +212,7 @@ SIMPLE_JWT = {
 DOMAIN = 'localhost:5173'
 
 
-# DJOSER = {
-    
-#     "USER_CREATE_PASSWORD_RETYPE": True,
-#     "PASSWORD_CHANGED_EMAIL_CONFIRMATION": True,
-#     "SEND_CONFIRMATION_EMAIL": True,
-#     "PASSWORD_RESET_CONFIRM_URL": "password/reset/confirm/{uid}/{token}",
-#     "SET_PASSWORD_RETYPE": True,
-#     "PASSWORD_RESET_CONFIRM_RETYPE": True,
-#     "ACTIVATION_URL": "activate/{uid}/{token}",
-#     "SEND_ACTIVATION_EMAIL": True,
-#     "SERIALIZERS": {
-#         "user_create": "accounts.serializers.UserCreateSerializer",
-#         "user": "accounts.serializers.UserSerializer",
-#         "current_user": "accounts.serializers.UserSerializer",
-#         # "user_delete": "djoser.serializers.UserDeleteSerializer",
-#     },
-#     "EMAIL":{
-#         'activation':'RSM.email.ActivationEmail',
-#     }
-# }
+
 
 CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
@@ -254,6 +235,7 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 #twillio settings
 TWILLIO_SID = os.environ.get('TWILLIO_SID')
 TWILLIO_TOKEN = os.environ.get('TWILLIO_TOKEN')
+TWILLIO_NUMBER = os.environ.get('TWILLIO_NUMBER')
 
 #logger settings
 
