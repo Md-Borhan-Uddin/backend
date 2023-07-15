@@ -15,7 +15,7 @@ class CustomAuthentication(BaseBackend):
         count = cache.get(cache_key, 0)
         
         if count >= 3:
-            raise serializers.ValidationError(detail={"message":"Sorry,We prevent you to login since you used all attempts"})
+            raise serializers.ValidationError(detail={"message":"Sorry,We prevent you to login since you used all attempts. Try After 30 minutes"})
 
         user = UserModel.objects.filter(username=username).first()
         if user and user.check_password(password):
@@ -23,5 +23,5 @@ class CustomAuthentication(BaseBackend):
             cache.delete(cache_key)
             return user
 
-        cache.set(cache_key, count + 1, timeout=60)  # Cache login attempt for 30 minutes
+        cache.set(cache_key, count + 1, timeout=30*60)  # Cache login attempt for 30 minutes
         return None

@@ -169,6 +169,7 @@ class UserApiView(ListAPIView):
 class UpdateUserAPIView(UpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserEditSerializer
+    lookup_field = 'username'
     # permission_classes = [IsAuthenticated]
 
 

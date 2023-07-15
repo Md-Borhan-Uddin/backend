@@ -26,6 +26,7 @@ class UserEditSerializer(serializers.ModelSerializer):
         fields = ['username','first_name','last_name','image','middel_name','email','mobile_number', 'is_active']
 
     def update(self,instance, validated_data):
+        print(validated_data)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.middel_name = validated_data.get('middel_name', instance.middel_name)
