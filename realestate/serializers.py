@@ -82,7 +82,7 @@ class AssertTypeSerializers(serializers.ModelSerializer):
 class RealEstateSerializer(serializers.ModelSerializer):
     type_id = serializers.IntegerField(write_only=True)
     type = RealEstateTypeSerializers(read_only=True)
-    image_url = serializers.SerializerMethodField('get_image_url')
+    image_url = serializers.SerializerMethodField('get_image_url',read_only=True)
     user_id = serializers.CharField(write_only=True,required=False)
 
     class Meta:
@@ -115,6 +115,7 @@ class RealEstateSerializer(serializers.ModelSerializer):
         return obj
     
     def get_image_url(self, obj):
+        
         request = self.context.get('request')
         return request.build_absolute_uri(obj.photo)
 

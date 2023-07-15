@@ -126,7 +126,7 @@ class RealEstateAPI(APIView):
         if Membership.object.filter(user=request.user.id,expire_date__gt=datetime.now(),is_pay=True).exists():
             serializer = RealEstateSerializer(data=request.data, context = {"request":request})
             if serializer.is_valid():
-                re = serializer.save(location='dhaka')
+                re = serializer.save()
                 
                 data = {
                     'message':"RealEstate Save Successfully",
@@ -135,7 +135,7 @@ class RealEstateAPI(APIView):
                 return Response(data,status=status.HTTP_201_CREATED)
 
             return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response(data={'message':'You dont have active membership'})
+        return Response(data={'message':'You dont have active membership'}, status=status.HTTP_406_NOT_ACCEPTABLE)
     
 class AssetByRealestate(APIView):
 

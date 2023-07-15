@@ -42,11 +42,11 @@ class UserEditSerializer(serializers.ModelSerializer):
 
 
 
-class UserCreateSerializer(UserCreateSerializer):
+class UserCreateSerializer(serializers.ModelSerializer):
     mobile_number = PhoneNumberField(region='BD')
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
-    class Meta(UserCreateSerializer.Meta):
+    class Meta:
         model = User
         fields = ['username','password','password2','first_name','last_name','middel_name','email','mobile_number', 'date_joined']
 

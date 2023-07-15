@@ -11,6 +11,7 @@ urlpatterns = [
     path('admin/registration/', AdminListApiView.as_view()),
     path('login/', LoginAPIView.as_view()),
     path('realtor/registration/', RealTorApiView.as_view()),
+    path("update-user/<str:username>/", RealTorApiView.as_view(), name="user_update"),
     path('user-edit/<str:username>/', UpdateUserAPIView.as_view()),
     path("user-delete/<int:pk>/", UserRetrieveDestroyAPIView.as_view(), name="user_delete"),
     path('user/', UserRetrieveDestroyAPIView.as_view()),

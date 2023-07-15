@@ -10,6 +10,7 @@ urlpatterns = [
     path('country/', CountryListCreateAPIView.as_view()),
     path('country/<int:pk>/', CountryRetrieveDestroyAPIView.as_view()),
     path('city/', CityListCreateAPIView.as_view()),
+    path("city/<int:country_id>/", CityListCreateAPIView.as_view(), name="city_by_country"),
     path('city/<int:pk>/', CityRetrieveDestroyAPIView.as_view()),
     path('asset/', AssetListCreateAPIView.as_view()),
     path('asset/<int:pk>/', AssetRetrieveDestroyAPIView.as_view()),

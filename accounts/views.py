@@ -73,6 +73,15 @@ class RealTorApiView(ListCreateAPIView):
             print(serializer.errors)
             return Response(serializer.errors, status=status.HTTP_404_NOT_FOUND)
 
+    def patch(self, request, *args, **kwargs):
+        username = self.kwargs.get('username')
+        # print(self.kwargs)
+        obj = User.objects.get(username=username)
+        serializer = UserCreateSerializer(obj,data=request.data,partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'mesage':'User Update Successfully'}, status=status.HTTP_200_OK)
+
 
 
 class ResendEmail(APIView):
@@ -171,6 +180,10 @@ class UpdateUserAPIView(UpdateAPIView):
     serializer_class = UserEditSerializer
     lookup_field = 'username'
     # permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        print(self.request.data)
+        return super().get_queryset()
 
 
 class UserRetrieveDestroyAPIView(RetrieveDestroyAPIView):

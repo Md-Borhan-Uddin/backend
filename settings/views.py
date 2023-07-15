@@ -36,6 +36,13 @@ class CityListCreateAPIView(ListCreateAPIView):
     serializer_class = CitySerializer
 
 
+    def get_queryset(self,):
+        country = self.kwargs.get('country_id')
+        if country:
+            return City.objects.filter(country=country)
+        return super().get_queryset()
+
+
 
 
 class CityRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):

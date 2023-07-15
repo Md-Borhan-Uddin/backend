@@ -30,7 +30,7 @@ class RealEstate(models.Model):
     photo = models.ImageField(upload_to='realEstate/image')
     country = models.CharField(max_length=50)
     city = models.CharField(max_length=50)
-    location = models.CharField(max_length=50)
+    location = models.JSONField(default=dict)
     type = models.ForeignKey(RealEstateType, on_delete=models.CASCADE)
     property_age_years = models.CharField(max_length=3)
     property_age_months = models.IntegerField()
