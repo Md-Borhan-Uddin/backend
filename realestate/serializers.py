@@ -34,18 +34,13 @@ class AssertBrandSerializers(serializers.ModelSerializer):
         model = AssertBrand
         fields = ['id','name', 'is_active']
     
-    def validate(self, data):
-        if AssertBrand.objects.filter(name=data.get('name')).exists():
-            raise serializers.ValidationError('AssertBrand name already exist Try another name')
-        return super().validate(data)
+    
     
     def create(self, validated_data):
-        print(validated_data)
         return super().create(validated_data)
     
 
     def update(self, instance, validated_data):
-        
         instance.name = validated_data.get('name', instance.name)
         instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.save()
@@ -59,11 +54,6 @@ class AssertTypeSerializers(serializers.ModelSerializer):
     class Meta:
         model = AssertType
         fields = ['id','name','is_active']
-    
-    def validate(self, data):
-        if AssertType.objects.filter(name=data.get('name')).exists():
-            raise serializers.ValidationError('AssertType name already exist Try another name')
-        return super().validate(data)
 
     def create(self, validated_data):
         return super().create(validated_data)

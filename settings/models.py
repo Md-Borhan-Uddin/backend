@@ -9,6 +9,7 @@ from datetime import timedelta, datetime
 
 class Country(models.Model):
     name = models.CharField(max_length=20, unique=True)
+    is_active = models.BooleanField(default=False)
     create = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
 
@@ -23,6 +24,7 @@ class Country(models.Model):
 class City(models.Model):
     country = models.ForeignKey(Country, on_delete=models.CASCADE)
     name = models.CharField(max_length=20, unique=True)
+    is_active = models.BooleanField(default=False)
     create = models.DateTimeField(auto_now_add=True)
     update = models.DateTimeField(auto_now=True)
 

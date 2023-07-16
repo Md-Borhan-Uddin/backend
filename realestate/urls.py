@@ -12,7 +12,7 @@ urlpatterns = [
     path('real-estate-type/',RealEstateTypeListCreateAPIView.as_view()),
     path('real-estate-type/<int:pk>/',RealEstateTypeRetrieveDestroyAPIView.as_view()),
 
-    path('asset/', AssetListAPIView.as_view(), name='asset'),
+    path('assets/', AssetListAPIView.as_view(), name='asset'),
     path('asset-by/<int:pk>/', AssetByRealestate.as_view(), name='asset_by'),
 
     path('assert-type/',AssertTypeListCreateAPIView.as_view()),

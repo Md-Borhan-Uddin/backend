@@ -65,7 +65,6 @@ class RealestateUpdateAPIView(APIView):
              return Response({"message":"Realestate Not Found"}, status=status.HTTP_404_NOT_FOUND)
     
     def patch(self,request,pk,*args, **kwargs):
-        print(request.data)
         serializer = RealEstateSerializer(data=request.data, context={"request":request})
         if serializer.is_valid():
             re = serializer.save(location='dhaka')

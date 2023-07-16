@@ -19,6 +19,7 @@ class CountrySerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
         instance.save()
         return instance
     
@@ -34,15 +35,17 @@ class AssetSerializers(serializers.ModelSerializer):
     
     
     def create(self, validated_data):
+
         return super().create(validated_data)
     
 
     def update(self, instance, validated_data):
-        c_id = validated_data.get('category_id')
+        
+        c_id = validated_data.get('brand_id')
         t_id = validated_data.get('type_id')
         type = AssertType.objects.get(id=t_id)
         cat = AssertBrand.objects.get(id=c_id)
-        instance.category = cat
+        instance.brand = cat
         instance.type = type
         instance.save()
         return instance
@@ -55,7 +58,7 @@ class CitySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = City
-        fields = ['id','name','country','country_id']
+        fields = ['id','name','country','country_id','is_active']
 
 
 
@@ -66,6 +69,7 @@ class CitySerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         instance.name = validated_data.get('name', instance.name)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
         id = validated_data.get('country_id')
         country = Country.objects.get(id=id)
         instance.country = country

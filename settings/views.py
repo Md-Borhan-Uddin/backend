@@ -8,6 +8,7 @@ from rest_framework.exceptions import ValidationError
 
 #own file import
 from settings.models import *
+from accounts.models import UserType
 from settings.serializers import *
 from .tasks import notification
 
@@ -72,6 +73,9 @@ class PackageListCreateAPIView(ListCreateAPIView):
     serializer_class = PackageSerializer
 
     def get_queryset(self):
+        print(self.request.user)
+        if self.request.user.user_type==UserType.ADMIN:
+            return Package.objects.all()
         return Package.objects.filter(is_active = True)
 
     
@@ -82,8 +86,11 @@ class PackageRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Package.objects.all()
     serializer_class = PackageSerializer
 
-    def get_queryset(self):
-        return Package.objects.filter(is_active = True)
+    # def get_queryset(self):
+    #     print(self.request.user)
+    #     if self.request.user.user_type==UserType.ADMIN:
+    #         return Package.objects.all()
+    #     return Package.objects.filter(is_active = True)
 
 
 class PackageRetrieveAPIViewByName(RetrieveAPIView):
