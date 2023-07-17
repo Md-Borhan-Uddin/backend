@@ -68,11 +68,13 @@ class CitySerializer(serializers.ModelSerializer):
     
 
     def update(self, instance, validated_data):
+        print(validated_data)
         instance.name = validated_data.get('name', instance.name)
         instance.is_active = validated_data.get('is_active', instance.is_active)
         id = validated_data.get('country_id')
-        country = Country.objects.get(id=id)
-        instance.country = country
+        if id:
+            country = Country.objects.get(id=id)
+            instance.country = country
         instance.save()
         return instance
 

@@ -76,18 +76,18 @@ class AssertBrand(AbstractCategory):
 class Assert(models.Model):
     real_estate = models.ForeignKey(RealEstate,on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
-    Photo = models.ImageField(upload_to='assert/image')
-    type = models.ForeignKey(AssertType, on_delete=models.SET_NULL, null=True)
-    brand = models.ForeignKey(AssertBrand, on_delete=models.SET_NULL, null=True)
-    model = models.CharField(max_length=100)
+    photo = models.ImageField(upload_to='assert/image')
+    type = models.ForeignKey(AssertType, on_delete=models.CASCADE)
+    brand = models.ForeignKey(AssertBrand, on_delete=models.CASCADE)
+    model = models.CharField(max_length=200)
     description = models.CharField(max_length=500)
     quantity = models.IntegerField()
     purchasing_price = models.DecimalField(max_digits=20, decimal_places=2)
     purchasing_currency = models.CharField(max_length=100)
     purchasing_date = models.DateField(auto_now=False, auto_now_add=False)
-    floor_name = models.IntegerField()
-    room_name = models.IntegerField()
-    assert_file = models.FileField( upload_to='assert/file')
+    floor_name = models.CharField(max_length=100)
+    room_name = models.CharField(max_length=100)
+    assert_file = models.FileField(null=True,blank=True, upload_to='assert/file')
 
     def __str__(self):
         return self.name

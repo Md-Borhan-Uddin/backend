@@ -170,11 +170,18 @@ class RealEstateUpdateSerializer(serializers.ModelSerializer):
 
 
 class AssertSerializer(serializers.ModelSerializer):
-    real_estate = RealEstateSerializer()
+    # real_estate = RealEstateSerializer()
     class Meta:
         model = Assert
-        fields = '__all__'
+        fields = ['id','name','brand', 'type', 'real_estate','photo',
+                  'model','description','quantity', 'purchasing_price','purchasing_currency','purchasing_date',
+                  'floor_name','room_name','assert_file']
 
+    def create(self, validated_data):
+        return super().create(validated_data)
+    
+    def update(self, instance, validated_data):
+        return super().update(instance, validated_data)
 
 
 
