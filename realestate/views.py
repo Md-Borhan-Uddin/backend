@@ -159,7 +159,6 @@ class AssetListAPIView(ListCreateAPIView):
     serializer_class = AssertSerializer
 
     def get_queryset(self):
-        print(self.request.data)
         if self.request.user.user_type==UserType.ADMIN:
             return super().get_queryset()
         return Assert.objects.filter(real_estate__user=self.request.user)

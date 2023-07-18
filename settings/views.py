@@ -42,7 +42,6 @@ class CityListCreateAPIView(ListCreateAPIView):
 
 
     def get_queryset(self):
-        print(self.kwargs)
         country = self.kwargs.get('country_id')
         if country:
             return City.objects.filter(country=country)
@@ -78,7 +77,6 @@ class PackageListCreateAPIView(ListCreateAPIView):
     serializer_class = PackageSerializer
 
     def get_queryset(self):
-        print(self.request.user)
         if self.request.user.user_type==UserType.ADMIN:
             return Package.objects.all()
         return Package.objects.filter(is_active = True)
@@ -141,7 +139,6 @@ class ActiveMembershipList(RetrieveAPIView):
     # lookup_field = 'user.username'
 
     def get_object(self):
-        print(self.request.user)
         user = self.request.user
         return Membership.active.filter(user=user)
 
@@ -159,5 +156,4 @@ class MembershipRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         user = self.request.user
         id = self.kwargs.get('pk')
-        print(self.kwargs)
         return Membership.objects.filter(user=user,is_pay=True,expire_date__lt=datetime.now())
