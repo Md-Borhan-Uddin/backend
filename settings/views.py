@@ -130,10 +130,15 @@ class MembershipListCreateAPIView(ListCreateAPIView):
         return Membership.objects.filter(user=user,is_pay=True,expire_date__gt=datetime.now())
 
 
-class ActiveMembershipList(ListAPIView):
+class ActiveMembershipList(RetrieveAPIView):
     queryset = Membership.object.active()
     serializer_class = MembershipSerializer
+    # lookup_field = 'user.username'
 
+    def get_object(self):
+        print(self.request.user)
+        user = self.request.user
+        return Membership.object.active(user=user)
 
 class InactiveMembershipList(ListAPIView):
     queryset = Membership.object.inactive()

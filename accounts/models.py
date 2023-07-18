@@ -3,8 +3,9 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.contrib.auth.hashers import make_password
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import MinLengthValidator
+from django.core.validators import RegexValidator
 # Create your models here.
-
+#\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$"
 class UserType(models.TextChoices):
     ADMIN = 'Admin','Admin'
     REALTOR = 'RealTor','RealTor'
@@ -12,8 +13,8 @@ class UserType(models.TextChoices):
 class User(AbstractUser):
     
     middel_name = models.CharField(max_length=10, null=True, blank=True)
-    email = models.EmailField(max_length=254)
-    mobile_number = PhoneNumberField(region='SA')
+    email = models.EmailField(max_length=254,unique=True)
+    mobile_number = models.CharField(max_length=14,unique=True, default='+9667381917334', validators=[RegexValidator(r'^\+[0-9]{3}[\s\./0-9]{9}$')])
 
     user_type = models.CharField(max_length=10, choices=UserType.choices)
     is_realtor = models.BooleanField(default=False)

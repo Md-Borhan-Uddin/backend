@@ -20,14 +20,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserEditSerializer(serializers.ModelSerializer):
-    mobile_number = PhoneNumberField(region='SA')
-    user_type = serializers.CharField(source='user.user_type', read_only=True)
+    # user_type = serializers.CharField(source='user.user_type', read_only=True)
     class Meta:
         model = User
         fields = ['id','username','first_name','last_name','image','middel_name','email','mobile_number', 'is_active','user_type']
 
     def update(self,instance, validated_data):
-        print(validated_data)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.last_name)
         instance.middel_name = validated_data.get('middel_name', instance.middel_name)
@@ -44,7 +42,6 @@ class UserEditSerializer(serializers.ModelSerializer):
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    mobile_number = PhoneNumberField(region='BD')
     password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     password = serializers.CharField(style={'input_type': 'password'}, write_only=True)
     class Meta:
@@ -62,29 +59,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
         return instance
 
 
-    def validate_username(self, value):
-        
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError(detail={"message":"Username Already Exist Please try another"})
-        return value
-
-    def validate_email(self, value):
-        
-        if User.objects.filter(email=value).exists():
-            raise serializers.ValidationError(detail={"message":"Email Already Exist Please try another"})
-        return value
-
-    def validate_mobile_number(self, value):
-        
-        
-        if User.objects.filter(mobile_number=value).exists():
-            raise serializers.ValidationError(detail={"message":"Mobile NUmber Already Exist Please try another"})
-        return value
-
-    def validate_username(self, value):
-        if User.objects.filter(username=value).exists():
-            raise serializers.ValidationError(detail={"message":"Username Already Exist Please try another"})
-        return value
 
     def validate(self, data):
         password = data.get('password')
