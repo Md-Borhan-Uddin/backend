@@ -66,20 +66,16 @@ class Package(models.Model):
         return self.name
 
 
-class MembershipQuery(models.QuerySet):
-    def active(self,user=None):
-        return self.filter(expire_date__gt=datetime.now(),is_pay=True,user=user)
-    def inactive(self):
-        return self.filter(expire_date__lt=datetime.now(),is_pay=True)
-
-
-class MembershipManager(models.Manager):
+class InactiveManager(models.Manager):
+    
     def get_queryset(self):
-        return MembershipQuery(model=self.model, using=self._db)
-    def active(self,user=None):
-        return self.get_queryset().active(user=user)
-    def inactive(self):
-        return self.get_queryset().inactive()
+        return super().get_queryset().filter(is_pay=True)
+
+
+class ActiveManager(models.Manager):
+    def get_queryset(self):
+        return super().get_queryset().filter(is_pay=True)
+    
 
 
 class Membership(models.Model):
@@ -87,10 +83,11 @@ class Membership(models.Model):
     package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='package')
     is_pay = models.BooleanField(default=False)
     start_date = models.DateTimeField(auto_now=True, auto_now_add=False)
-    expire_date = models.DateTimeField(auto_now=False, auto_now_add=False)
+    expire_date = models.DateTimeField()
 
     objects = models.Manager()
-    object = MembershipManager()
+    active = ActiveManager()
+    inactive = InactiveManager()
     def __str__(self):
         return self.package.name
 

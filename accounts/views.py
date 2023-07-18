@@ -181,9 +181,9 @@ class UpdateUserAPIView(UpdateAPIView):
     lookup_field = 'username'
     # permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        print(self.request.data)
-        return super().get_queryset()
+    # def get_queryset(self):
+    #     print(self.request.data)
+    #     return super().get_queryset()
 
 class UserDestroyAPIView(DestroyAPIView):
     queryset = User.objects.all()

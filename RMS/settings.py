@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'realestate.apps.RealestateConfig',
     'settings.apps.SettingsConfig',
     
-
+    'django_filters',
     #third party app
     'rest_framework',
     'djoser',

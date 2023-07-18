@@ -17,6 +17,8 @@ from django.db.models import Count
 from settings.models import Membership
 from settings.tasks import notification
 
+from utils.pagination import PaginationWithPageNumber
+
 # Create your views here.
 
 
@@ -108,15 +110,18 @@ class RealEstateRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     #     return super().get_queryset()
 
 
-class RealEstateAPI(APIView):
+
+class RealEstateAPI(APIView,PaginationWithPageNumber):
+    # pagination_class = PaginationWithPageNumber
     def get(self, request, usertype, *args, **kwargs):
         obj = RealEstate.objects.all()
-
+        
         if usertype != UserType.ADMIN:
             obj = RealEstate.objects.filter(user=request.user.id)
 
-        serializer = RealEstateSerializer(obj, many=True, context={"request": request})
-        return Response(data=serializer.data)
+        results = self.paginate_queryset(obj,request,view=self)
+        serializer = RealEstateSerializer(results, many=True, context={"request": request})
+        return self.get_paginated_response(serializer.data)
 
     def post(self, request, *args, **kwargs):
         if Membership.object.filter(
@@ -169,7 +174,7 @@ class ScheduleMaintainesListAPIView(ListCreateAPIView):
     pagination_class = PaginationWithPageNumber
 
     def get_queryset(self):
-        notification()
+        # notification()
         obj = None
         user = self.request.user
         obj = ScheduleMaintaines.objects.all()

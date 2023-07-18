@@ -4,7 +4,7 @@ from rest_framework.mixins import ListModelMixin
 from rest_framework.views import APIView
 from rest_framework import status
 from datetime import datetime
-from rest_framework.exceptions import ValidationError
+from django_filters.rest_framework import DjangoFilterBackend
 
 #own file import
 from settings.models import *
@@ -21,6 +21,8 @@ from .tasks import notification
 class CountryListCreateAPIView(ListCreateAPIView):
     queryset = Country.objects.all()
     serializer_class = CountrySerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('is_active',)
 
 
 
@@ -35,9 +37,12 @@ class CountryRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
 class CityListCreateAPIView(ListCreateAPIView):
     queryset = City.objects.all()
     serializer_class = CitySerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('is_active',)
 
 
-    def get_queryset(self,):
+    def get_queryset(self):
+        print(self.kwargs)
         country = self.kwargs.get('country_id')
         if country:
             return City.objects.filter(country=country)
@@ -131,17 +136,17 @@ class MembershipListCreateAPIView(ListCreateAPIView):
 
 
 class ActiveMembershipList(RetrieveAPIView):
-    queryset = Membership.object.active()
+    queryset = Membership.active.all()
     serializer_class = MembershipSerializer
     # lookup_field = 'user.username'
 
     def get_object(self):
         print(self.request.user)
         user = self.request.user
-        return Membership.object.active(user=user)
+        return Membership.active.filter(user=user)
 
 class InactiveMembershipList(ListAPIView):
-    queryset = Membership.object.inactive()
+    queryset = Membership.inactive.all()
     serializer_class = MembershipSerializer
 
 
