@@ -24,14 +24,11 @@ class CountrySerializer(serializers.ModelSerializer):
         return instance
     
 class AssetSerializers(serializers.ModelSerializer):
-    brand_id = serializers.IntegerField(write_only=True)
-    type_id = serializers.IntegerField(write_only=True)
-    type = AssertTypeSerializers(read_only=True)
-    brand = AssertBrandSerializers(read_only=True)
+    
 
     class Meta:
         model = Asset
-        fields = ['id','brand','type','brand_id','type_id']
+        fields = ['id','brand','type']
     
     
     def create(self, validated_data):
@@ -40,15 +37,7 @@ class AssetSerializers(serializers.ModelSerializer):
     
 
     def update(self, instance, validated_data):
-        
-        c_id = validated_data.get('brand_id')
-        t_id = validated_data.get('type_id')
-        type = AssertType.objects.get(id=t_id)
-        cat = AssertBrand.objects.get(id=c_id)
-        instance.brand = cat
-        instance.type = type
-        instance.save()
-        return instance
+        return super().update(instance, validated_data)
 
 
 

@@ -167,4 +167,6 @@ class MembershipRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
     def get_queryset(self):
         user = self.request.user
         id = self.kwargs.get('pk')
+        if user.user_type == UserType.ADMIN:
+            return super().get_queryset()
         return Membership.objects.filter(user=user,is_pay=True,expire_date__lt=datetime.now())
