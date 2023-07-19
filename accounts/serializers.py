@@ -20,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class UserEditSerializer(serializers.ModelSerializer):
-    # user_type = serializers.CharField(source='user.user_type', read_only=True)
+    # middel_name = serializers.CharField(required=False, allow_null=True)
     class Meta:
         model = User
         fields = ['id','username','first_name','last_name','image','middel_name','email','mobile_number', 'is_active','user_type']

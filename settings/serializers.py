@@ -132,20 +132,22 @@ class MembershipSerializer(serializers.ModelSerializer):
         fields = ['id','package','package_id','start_date','expire_date', 'is_pay','user']
 
 
-    def validat(self, data):
+    def validate(self, data):
         
         request = self.context.get('request')
         # pac = Package.objects.get(name=data.get('package_id'))
         user = request.user
         if Membership.objects.filter(user=user, is_active=True).exists():
-            raise serializers.ValidationError(f'You have an active membership that expired on {data["expaire_date"]}, Would like cancel it, and proceed with new membership')
+            raise serializers.ValidationError(f'You have an active membership that expired on {data["expire_date"]}, Would like cancel it, and proceed with new membership')
         return data
 
     def create(self, validated_data):
         
         request = self.context.get('request')
+        package_id = validated_data.pop('package_id')
+        package = Package.objects.get(pk=package_id)
         
-        return Membership.objects.create(user=request.user,**validated_data)
+        return Membership.objects.create(user=request.user,package=package,**validated_data)
     
     
 

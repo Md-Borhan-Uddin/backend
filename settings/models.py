@@ -66,15 +66,15 @@ class Package(models.Model):
         return self.name
 
 
-class InactiveManager(models.Manager):
+# class InactiveManager(models.Manager):
     
-    def get_queryset(self):
-        return super().get_queryset().filter(is_pay=True)
+#     def get_queryset(self):
+#         return super().get_queryset().filter(is_pay=True)
 
 
-class ActiveManager(models.Manager):
-    def get_queryset(self):
-        return super().get_queryset().filter(is_pay=True)
+# class ActiveManager(models.Manager):
+#     def get_queryset(self):
+#         return super().get_queryset().filter(is_pay=True)
     
 
 
@@ -82,12 +82,9 @@ class Membership(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     package = models.ForeignKey(Package, on_delete=models.CASCADE, related_name='package')
     is_pay = models.BooleanField(default=False)
-    start_date = models.DateTimeField(auto_now=True, auto_now_add=False)
+    start_date = models.DateTimeField(auto_now=False, auto_now_add=True)
     expire_date = models.DateTimeField()
 
-    objects = models.Manager()
-    active = ActiveManager()
-    inactive = InactiveManager()
     def __str__(self):
         return self.package.name
 
