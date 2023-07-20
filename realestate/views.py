@@ -4,7 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from accounts.models import UserType
 from rest_framework.generics import (
-    ListAPIView,
+    
     ListCreateAPIView,
     RetrieveDestroyAPIView,
     RetrieveUpdateDestroyAPIView,
@@ -16,7 +16,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from settings.models import Membership
 from settings.tasks import notification
-
+from django.utils import timezone
 from utils.pagination import PaginationWithPageNumber
 
 # Create your views here.
@@ -124,9 +124,7 @@ class RealEstateAPI(APIView,PaginationWithPageNumber):
         return self.get_paginated_response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        if Membership.object.filter(
-            user=request.user.id, expire_date__gt=datetime.now(), is_pay=True
-        ).exists():
+        if request.user.user_type==UserType.ADMIN or Membership.objects.filter(user=request.user.id, expire_date__gt=timezone.now(), is_pay=True).exists():
             serializer = RealEstateSerializer(
                 data=request.data, context={"request": request}
             )

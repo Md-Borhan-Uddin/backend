@@ -3,7 +3,7 @@ from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIV
 from rest_framework.mixins import ListModelMixin
 from rest_framework.views import APIView
 from rest_framework import status
-from datetime import datetime
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 
 #own file import
@@ -118,7 +118,7 @@ class MembershipListCreateAPIView(ListCreateAPIView):
         if serializer.is_valid():
             id = serializer.data.get('user_id')
             user = User.objects.get(id=2)
-            if Membership.objects.filter(user=user, expire_date__gt=datetime.now()).exists():
+            if Membership.objects.filter(user=user, expire_date__gt=timezone.now()).exists():
                 raise serializers.ValidationError(f'You have an active membership that expired on, Would like cancel it, and proceed with new membership')
         
         return super().create(request, *args, **kwargs)
@@ -130,7 +130,7 @@ class MembershipListCreateAPIView(ListCreateAPIView):
         user = self.request.user
         if user.user_type == 'Admin':
             return Membership.objects.all()
-        return Membership.objects.filter(user=user,is_pay=True,expire_date__gt=datetime.now())
+        return Membership.objects.filter(user=user,is_pay=True,expire_date__gt=timezone.now())
 
 
 class ActiveMembershipList(RetrieveAPIView):
@@ -140,7 +140,7 @@ class ActiveMembershipList(RetrieveAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        qu = Membership.objects.filter(expire_date__gt=datetime.today(), is_pay=True, user=user)
+        qu = Membership.objects.filter(expire_date__gt=timezone.now(), is_pay=True, user=user)
         # print('member',qu)
         return qu
     
@@ -155,7 +155,7 @@ class InactiveMembershipList(ListAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        return Membership.objects.filter(expire_date__lt=datetime.today(), is_pay=True, user=user)
+        return Membership.objects.filter(expire_date__lt=timezone.now(), is_pay=True, user=user)
     
 
 class MembershipRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
@@ -169,4 +169,4 @@ class MembershipRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
         id = self.kwargs.get('pk')
         if user.user_type == UserType.ADMIN:
             return super().get_queryset()
-        return Membership.objects.filter(user=user,is_pay=True,expire_date__lt=datetime.now())
+        return Membership.objects.filter(user=user,is_pay=True,expire_date__lt=timezone.now())
