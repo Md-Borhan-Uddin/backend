@@ -1,9 +1,10 @@
 from realestate.models import ScheduleMaintaines, ScheduleMaintainesStatue
 from utils.twillo_client import message, TwilloClient
-from datetime import datetime
 from RMS import settings
 from realestate.emails import MaintainceReminderEmail
 from accounts.models import Notification
+from django.utils import timezone
+
 
 
 def maintains_notification():
@@ -12,18 +13,28 @@ def maintains_notification():
 
     twillo = TwilloClient(settings.TWILLIO_SID,settings.TWILLIO_TOKEN)
     for item in object:
-        if item.create==datetime.today() or item.reminder_date==datetime.today():
-            to = item.real_estate.user.mobile_number
+        
+        if item.create<=timezone.now() or item.reminder_date<=timezone.now():
+            to_phone = item.real_estate.user.mobile_number
             username = item.real_estate.user.username
             asset = item.asset.name
             realestate = item.real_estate.name
-            body = f"Dear {username} ,Scheduled maintenance for  {asset} in {realestate} is due today, please update the maintenance status or change the maintenance date, from Modify Schedule Maintenance Feature"
+            if item.create<=timezone.now():
+                body = f"Dear {username} ,Scheduled maintenance for  {asset} in {realestate} is due today, please update the maintenance status or change the maintenance date, from Modify Schedule Maintenance Feature"
 
+            elif item.reminder_date==timezone.now():
+                body = f"Dear {username}, Scheduled reminder for {asset} in {realestate} maintenance is today, please remember the maintenance date is {item.maintain_date}, and you can update the scheduled maintenance from Modify Schedule Maintenance Feature"
             #send sms to phone
-            twillo.send_sms(body,to)
+            # twillo.send_sms(body,'01749918181')
 
             #send email to user email
-            MaintainceReminderEmail(context={'user':item.real_estate.user}).send([item.real_estate.user.email])
+            MaintainceReminderEmail(context={
+                'user':item.real_estate.user,
+                "username": username,
+                "asset": asset,
+                "realestate_name": realestate,
+                "body":body
+                }).send([item.real_estate.user.email])
 
             #create notification 
             Notification.objects.create(

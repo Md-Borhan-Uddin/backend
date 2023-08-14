@@ -1,7 +1,7 @@
 from django.urls import path
 from accounts.views import (
-    AdminListApiView, RealTorApiView, 
-    UserApiView, AcctiveAccount, LoginAPIView, 
+    AdminListApiView, RealTorApiView, RequestAPIView,
+    UserApiView, AcctiveAccount, LoginAPIView, NotificationListView,
     UpdateUserAPIView,UserRetrieveDestroyAPIView,UserDestroyAPIView,
     ResendEmail, UserChangepassword, SendPasswordResetEmail, ResetPassword
     )
@@ -21,4 +21,8 @@ urlpatterns = [
     path('resend-activation/', ResendEmail.as_view(), name="resend_activation"),
     path("password-reset-email/", SendPasswordResetEmail.as_view(), name="send_password_email"),
     path("reset-password/<uid>/<token>/", ResetPassword.as_view(), name="reset_password"),
+
+    path("notification/", NotificationListView.as_view(), name="notification"),
+
+    path("visitor-request/", RequestAPIView.as_view(), name="visitor_request")
 ]

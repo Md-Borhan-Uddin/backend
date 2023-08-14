@@ -1,6 +1,6 @@
 from rest_framework.response import Response
 from accounts.serializers import *
-from accounts.models import Admin,RealTor, User, UserType
+from accounts.models import Admin,RealTor, User, UserType, Notification
 from rest_framework.generics import ListAPIView,ListCreateAPIView, RetrieveDestroyAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.views import APIView
 from rest_framework.validators import ValidationError
@@ -16,6 +16,7 @@ from django.contrib.auth import authenticate
 from RMS import settings
 from utils.pagination import PaginationWithPageNumber
 from accounts.email import ActivationEmail, PasswordResetEmail
+from realestate.models import RealEstate
 
 # Create your views here.
 
@@ -243,3 +244,36 @@ class UserChangepassword(APIView):
             user.save()
             return Response({'message':'Password change Succesfully'})
         return Response({'message':'Somethings Wrong'})
+
+
+    
+
+class NotificationListView(ListAPIView):
+    serializer_class = NotificationSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return Notification.objects.filter(to=user.id)
+
+
+
+class RequestAPIView(ListCreateAPIView):
+    serializer_class = RequestSerializer
+
+    def create(self, request, *args, **kwargs):
+        obj = super().create(request, *args, **kwargs)
+        data = obj.data
+        print(obj.data)
+        real_estate = RealEstate.objects.get(id=data.get('real_estate'))
+        Notification.objects.create(
+            subject = 'Visitor Request',
+            body = f"Dear {real_estate.user.username} new request – {data.get('id')} has been received and waiting your approval to share your real estate {real_estate.name} information with the {data.get('first_name')}",
+            to=real_estate.user
+        )
+        return obj
+
+    def get_queryset(self):
+        user = self.request.user
+        
+        return Visitor.objects.filter(realestate__user=user)
+    

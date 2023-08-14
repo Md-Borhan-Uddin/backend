@@ -4,8 +4,11 @@ from django.contrib.auth.hashers import make_password
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import MinLengthValidator
 from django.core.validators import RegexValidator
+# from realestate.models import RealEstate
 # Create your models here.
-#\\+?\\d{1,4}?[-.\\s]?\\(?\\d{1,3}?\\)?[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,4}[-.\\s]?\\d{1,9}$"
+
+
+
 class UserType(models.TextChoices):
     ADMIN = 'Admin','Admin'
     REALTOR = 'RealTor','RealTor'
@@ -61,8 +64,24 @@ class RealTor(User):
             self.user_type = UserType.REALTOR
         return super().save(*args, **kwargs)
 
+class RequestStatus(models.TextChoices):
+    DEFAULT = 'Default', 'Default'
+    APPROVE = 'Approve', 'Approve'
+    REJECT = 'Reject', 'Reject'
 
+class Visitor(models.Model):
+    first_name = models.CharField(max_length=10)
+    last_name = models.CharField(max_length=10)
+    email = models.EmailField(max_length=254)
+    mobile_number = PhoneNumberField()
+    real_estate = models.ForeignKey('realestate.RealEstate',on_delete=models.CASCADE)
+    is_aprove = models.CharField(max_length=10 ,choices=RequestStatus.choices,default=RequestStatus.DEFAULT)
+    create = models.DateTimeField(auto_now=False, auto_now_add=True)
+    update = models.DateTimeField(auto_now=True, auto_now_add=False)
 
+    def __str__(self):
+        return self.first_name
+    
 
 
 

@@ -1,14 +1,15 @@
 from rest_framework import serializers
-from accounts.models import User, RealTor,Admin
 from phonenumber_field.serializerfields import PhoneNumberField
-from phonenumber_field.validators import validate_international_phonenumber
-from djoser.serializers import UserCreateSerializer
+
+# from djoser.serializers import UserCreateSerializer
 # from settings.serializers import PackageSerializer
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 
 
+from accounts.models import User, RealTor,Admin,Notification, Visitor
 
+from realestate.models import RealEstate
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -109,3 +110,30 @@ class UserChangePasswordSerializer(serializers.Serializer):
 class EmailSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
+
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = Notification
+        fields = '__all__'
+
+
+
+class RequestSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Visitor
+        fields = '__all__'
+    
+    def create(self, validated_data):
+        
+        return super().create(validated_data)
+    
+    def validate(self, attrs):
+        real_estate_id = attrs.get('real_estate')
+        if Visitor.objects.filter(real_estate=real_estate_id).exists():
+            raise serializers.ValidationError("already requested")
+        return attrs

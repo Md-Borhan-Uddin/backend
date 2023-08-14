@@ -4,7 +4,7 @@ from .views import (
     RealEstateTypeRetrieveDestroyAPIView, AssertTypeRetrieveDestroyAPIView, 
     AssertTypeListCreateAPIView, AssertBrandListCreateAPIView, AssertBrandRetrieveDestroyAPIView,
     ScheduleMaintainesListAPIView, ScheduleMaintainesRetrieveUpdateDestroyAPIView, AssetListAPIView,
-    AssetByRealestate, RealestateCount, RealEstateRetrieveDestroyAPIView
+    AssetByRealestate, RealestateCount, RealEstateRetrieveDestroyAPIView,RealEstateDetailAPIView
     )
 from django.urls import path
 
@@ -28,6 +28,7 @@ urlpatterns = [
     path('realestate/delete/<int:pk>/', RealEstateRetrieveDestroyAPIView.as_view(), name='realestate_delete'),
     path("realestate-count/", RealestateCount.as_view(), name="realestate_count"),
     path("realestate/<int:pk>/detail/", RealEstateRetrieveDestroyAPIView.as_view(), name="realestate_by_id"),
+    path("real-estate/details/", RealEstateDetailAPIView.as_view(), name="realestate_details"),
 
     path('schedule-maintain/',ScheduleMaintainesListAPIView.as_view(), name='schedule_maintaines'),
     path('schedule-maintain/<int:pk>/',ScheduleMaintainesRetrieveUpdateDestroyAPIView.as_view(), name='schedule_maintaines'),

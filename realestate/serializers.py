@@ -74,10 +74,11 @@ class RealEstateSerializer(serializers.ModelSerializer):
     type = RealEstateTypeSerializers(read_only=True)
     image_url = serializers.SerializerMethodField('get_image_url',read_only=True)
     user_id = serializers.CharField(write_only=True,required=False)
+    user = UserSerializer(read_only=True)
 
     class Meta:
         model = RealEstate
-        fields = ['id','realestate_id','name','photo','country','city','type_id','user_id',
+        fields = ['id','realestate_id','user','name','photo','country','city','type_id','user_id',
                   'type','property_age_years','property_age_months','rented',
                   'owner','purchasing_cost','cost_currency','cost_date','purpose','image_url','location',
                   'number_of_floors','invoice_file','create','update']

@@ -10,7 +10,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from settings.models import *
 from accounts.models import UserType
 from settings.serializers import *
-from .tasks import notification
+from .tasks import membership_notification
 
 
 
@@ -126,7 +126,7 @@ class MembershipListCreateAPIView(ListCreateAPIView):
     
 
     def get_queryset(self):
-        # notification()
+        # membership_notification()
         user = self.request.user
         if user.user_type == 'Admin':
             return Membership.objects.all()

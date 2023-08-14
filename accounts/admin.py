@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import User, Notification
+from .models import User, Notification, Visitor
 # Register your models here.
 
 
@@ -11,3 +11,9 @@ class UserAdmin(admin.ModelAdmin):
 @admin.register(Notification)
 class NotificationAdmin(admin.ModelAdmin):
     list_display = ['id', 'to']
+
+
+
+@admin.register(Visitor)
+class NotificationAdmin(admin.ModelAdmin):
+    list_display = ['id', 'first_name']

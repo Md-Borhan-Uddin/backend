@@ -4,20 +4,22 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
 from accounts.models import UserType
 from rest_framework.generics import (
-    
+    ListAPIView,
+    RetrieveAPIView,
     ListCreateAPIView,
     RetrieveDestroyAPIView,
     RetrieveUpdateDestroyAPIView,
 )
+from django_filters.rest_framework import DjangoFilterBackend
 from .serializers import *
 from utils.pagination import PaginationWithPageNumber
 from .models import *
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from settings.models import Membership
-from settings.tasks import notification
+from settings.tasks import membership_notification
+from realestate.tasks import maintains_notification
 from django.utils import timezone
-from utils.pagination import PaginationWithPageNumber
 
 # Create your views here.
 
@@ -109,7 +111,16 @@ class RealEstateRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     #     print(self.request)
     #     return super().get_queryset()
 
+class RealEstateDetailAPIView(RetrieveAPIView):
+    serializer_class = RealEstateSerializer
 
+    def get_object(self):
+        id = self.request.query_params.get('realestate_id')
+        floor_number = self.request.query_params.get('number_of_floors')
+        if id:
+            return RealEstate.objects.get(realestate_id=id)
+        if floor_number:
+            return RealEstate.objects.filter(number_of_floors=floor_number).first()
 
 class RealEstateAPI(APIView,PaginationWithPageNumber):
     # pagination_class = PaginationWithPageNumber
@@ -171,7 +182,7 @@ class ScheduleMaintainesListAPIView(ListCreateAPIView):
     pagination_class = PaginationWithPageNumber
 
     def get_queryset(self):
-        # notification()
+        maintains_notification()
         obj = None
         user = self.request.user
         obj = ScheduleMaintaines.objects.all()
