@@ -1,5 +1,5 @@
 from .views import (
-    RealEstateTypeListCreateAPIView, RealEstateAPI, 
+    RealEstateTypeListCreateAPIView, RealEstateAPI, RealestateSearchAPIView,
     RealestateUpdateAPIView, AssetRetrieveUpdateDestroyAPIView,
     RealEstateTypeRetrieveDestroyAPIView, AssertTypeRetrieveDestroyAPIView, 
     AssertTypeListCreateAPIView, AssertBrandListCreateAPIView, AssertBrandRetrieveDestroyAPIView,
@@ -32,4 +32,6 @@ urlpatterns = [
 
     path('schedule-maintain/',ScheduleMaintainesListAPIView.as_view(), name='schedule_maintaines'),
     path('schedule-maintain/<int:pk>/',ScheduleMaintainesRetrieveUpdateDestroyAPIView.as_view(), name='schedule_maintaines'),
+
+    path("search-realestate/", RealestateSearchAPIView.as_view(), name="realestate_search"),
 ]

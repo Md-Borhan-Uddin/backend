@@ -1,19 +1,23 @@
+#django rest framework import
 from rest_framework.response import Response
 from accounts.serializers import *
-from accounts.models import Admin,RealTor, User, UserType, Notification
 from rest_framework.generics import ListAPIView,ListCreateAPIView, RetrieveDestroyAPIView, UpdateAPIView, DestroyAPIView
 from rest_framework.views import APIView
 from rest_framework.validators import ValidationError
+from rest_framework import status
+from rest_framework_simplejwt.tokens import RefreshToken
+from django_filters.rest_framework.backends import DjangoFilterBackend
+
+#django import 
 from django.core.mail import send_mail
 from django.urls import reverse
-from rest_framework.permissions import IsAuthenticated
-from rest_framework import status
 from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator, PasswordResetTokenGenerator
-from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import authenticate
-from RMS import settings
+
+#project import 
+from accounts.models import Admin,RealTor, User, UserType, Notification
 from utils.pagination import PaginationWithPageNumber
 from accounts.email import ActivationEmail, PasswordResetEmail
 from realestate.models import RealEstate
@@ -195,10 +199,6 @@ class UserRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-    # def get_queryset(self):
-    #     print(self.request)
-    #     return super().get_queryset()
-
     def get_object(self):
         request = self.request
         user = request.user
@@ -276,4 +276,21 @@ class RequestAPIView(ListCreateAPIView):
         user = self.request.user
         
         return Visitor.objects.filter(realestate__user=user)
+
+
+
+class RequestSearchAPIView(ListAPIView):
+    queryset = Visitor.objects.all()
+    serializer_class = RequestSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = serializer_class.Meta.fields#('id','first_name','last_name','create','update','real_estate__user')
+
+
+    # def get_queryset(self):
+    #     user = self.request.user
+        
+    #     print(self.request.query_params)
+    #     print(self.serializer_class.Meta.fields)
+        
+    #     return Visitor.objects.all()
     

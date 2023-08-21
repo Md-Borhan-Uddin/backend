@@ -4,9 +4,7 @@ from django.contrib.auth.hashers import make_password
 from phonenumber_field.modelfields import PhoneNumberField
 from django.core.validators import MinLengthValidator
 from django.core.validators import RegexValidator
-# from realestate.models import RealEstate
-# Create your models here.
-
+from django.utils import timezone
 
 
 class UserType(models.TextChoices):
@@ -22,6 +20,8 @@ class User(AbstractUser):
     user_type = models.CharField(max_length=10, choices=UserType.choices)
     is_realtor = models.BooleanField(default=False)
     image = models.ImageField(upload_to='profile', default='default.jpg')
+    create = models.DateTimeField(auto_now_add=True)
+    update = models.DateTimeField(auto_now=True)
 
 class AdminManager(models.Manager):
     def  get_queryset(self):
@@ -63,6 +63,9 @@ class RealTor(User):
         if self.pk is None:
             self.user_type = UserType.REALTOR
         return super().save(*args, **kwargs)
+
+
+
 
 class RequestStatus(models.TextChoices):
     DEFAULT = 'Default', 'Default'

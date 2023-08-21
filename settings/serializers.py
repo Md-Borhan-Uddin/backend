@@ -10,7 +10,7 @@ class CountrySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Country
-        fields = '__all__'
+        fields = ['id','name','is_active','create','update']
 
     
     def create(self, validated_data):
@@ -57,7 +57,6 @@ class CitySerializer(serializers.ModelSerializer):
     
 
     def update(self, instance, validated_data):
-        print(validated_data)
         instance.name = validated_data.get('name', instance.name)
         instance.is_active = validated_data.get('is_active', instance.is_active)
         id = validated_data.get('country_id')
@@ -90,7 +89,6 @@ class PackageSerializer(serializers.ModelSerializer):
         return package
 
     def update(self, instance, validated_data):
-        print("serializer",validated_data)
         instance.name = validated_data.get('name',instance.name)
         instance.description = validated_data.get('description',instance.description)
         instance.duration_date = validated_data.get('duration_date',instance.duration_date)

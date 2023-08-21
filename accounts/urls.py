@@ -1,6 +1,6 @@
 from django.urls import path
 from accounts.views import (
-    AdminListApiView, RealTorApiView, RequestAPIView,
+    AdminListApiView, RealTorApiView, RequestAPIView, RequestSearchAPIView,
     UserApiView, AcctiveAccount, LoginAPIView, NotificationListView,
     UpdateUserAPIView,UserRetrieveDestroyAPIView,UserDestroyAPIView,
     ResendEmail, UserChangepassword, SendPasswordResetEmail, ResetPassword
@@ -24,5 +24,6 @@ urlpatterns = [
 
     path("notification/", NotificationListView.as_view(), name="notification"),
 
-    path("visitor-request/", RequestAPIView.as_view(), name="visitor_request")
+    path("visitor-request/", RequestAPIView.as_view(), name="visitor_request"),
+    path("request-search/", RequestSearchAPIView.as_view(), name="request_search"),
 ]

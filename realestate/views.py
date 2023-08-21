@@ -1,8 +1,7 @@
+#rest framework import
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.permissions import IsAuthenticated
 from rest_framework import status
-from accounts.models import UserType
 from rest_framework.generics import (
     ListAPIView,
     RetrieveAPIView,
@@ -10,18 +9,45 @@ from rest_framework.generics import (
     RetrieveDestroyAPIView,
     RetrieveUpdateDestroyAPIView,
 )
+from rest_framework import serializers
+
+#third party import
 from django_filters.rest_framework import DjangoFilterBackend
-from .serializers import *
-from utils.pagination import PaginationWithPageNumber
-from .models import *
+
+#django import 
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
+from django.utils import timezone
+
+#project import 
+from utils.pagination import PaginationWithPageNumber
+from accounts.models import UserType
+from .serializers import *
+from .models import *
 from settings.models import Membership
 from settings.tasks import membership_notification
 from realestate.tasks import maintains_notification
-from django.utils import timezone
+from settings.serializers import CountrySerializer,CitySerializer
 
 # Create your views here.
+
+
+class RealEstateSearchSerializer(serializers.ModelSerializer):
+    country = CountrySerializer(read_only=True)
+    city = CitySerializer(read_only=True)
+    type = RealEstateTypeSerializers(read_only=True)
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = RealEstate
+        fields = ['id','realestate_id','user','name','photo','country','city',
+                  'type','property_age_years','property_age_months','rented',
+                  'owner','purchasing_cost','cost_currency','cost_date','purpose','location',
+                  'number_of_floors','create','update']
+    
+    
+   
+    
 
 
 class RealEstateTypeListCreateAPIView(ListCreateAPIView):
@@ -171,6 +197,22 @@ class AssetListAPIView(ListCreateAPIView):
         if self.request.user.user_type==UserType.ADMIN:
             return super().get_queryset()
         return Assert.objects.filter(real_estate__user=self.request.user)
+
+
+class RealestateSearchAPIView(ListAPIView):
+    queryset = RealEstate.objects.all()
+    serializer_class = RealEstateSearchSerializer
+    filter_backends = (DjangoFilterBackend,)
+    filterset_fields = ('id','name','user__date_joined','country','city',
+          'type',
+          'number_of_floors',
+          'user__first_name',
+          'user__last_name',
+          'user__username')
+    def get_queryset(self):
+        print(self.request.query_params)
+        return super().get_queryset()
+
 
 class AssetRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Assert.objects.all()
