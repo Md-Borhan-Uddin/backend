@@ -1,3 +1,6 @@
+from django.utils import timezone
+from datetime import datetime, timedelta
+
 from settings.models import *
 from rest_framework import serializers
 from realestate.models import AssertBrand, AssertType
@@ -118,23 +121,39 @@ class MembershipSerializer(serializers.ModelSerializer):
         model = Membership
         fields = ['id','package','package_id','start_date','expire_date', 'is_pay','user']
 
+    def get_expire_date(self,days:int,months:int):
+        
+        base_date = timezone.now()
 
+        new_year = base_date.year + (base_date.month + months - 1) // 12
+        new_month = (base_date.month + months - 1) % 12 + 1
+
+        new_date = base_date.replace(year=new_year, month=new_month)
+
+        delta = timedelta(days=days)
+        date = new_date + delta
+
+        return date
+
+    
     def validate(self, data):
         
         request = self.context.get('request')
         # pac = Package.objects.get(name=data.get('package_id'))
         user = request.user
-        if Membership.objects.filter(user=user, is_active=True).exists():
+        if Membership.objects.filter(user=user).exists():
             raise serializers.ValidationError(f'You have an active membership that expired on {data["expire_date"]}, Would like cancel it, and proceed with new membership')
         return data
 
     def create(self, validated_data):
-        
+        print(validated_data)
         request = self.context.get('request')
         package_id = validated_data.pop('package_id')
+        validated_data.pop('expire_date')
         package = Package.objects.get(pk=package_id)
-        
-        return Membership.objects.create(user=request.user,package=package,**validated_data)
+        expire_date = self.get_expire_date(package.duration_date,package.duration_month)
+        print(expire_date)
+        return Membership.objects.create(user=request.user,package=package,expire_date=expire_date,**validated_data)
     
     
 

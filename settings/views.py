@@ -89,12 +89,6 @@ class PackageRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Package.objects.all()
     serializer_class = PackageSerializer
 
-    # def get_queryset(self):
-    #     print(self.request.user)
-    #     if self.request.user.user_type==UserType.ADMIN:
-    #         return Package.objects.all()
-    #     return Package.objects.filter(is_active = True)
-
 
 class PackageRetrieveAPIViewByName(RetrieveAPIView):
     queryset = Package.objects.all()
@@ -108,16 +102,17 @@ class PackageRetrieveAPIViewByName(RetrieveAPIView):
 
 
 class MembershipListCreateAPIView(ListCreateAPIView):
-    queryset = Membership.objects.all()
+    # queryset = Membership.objects.all()
     serializer_class = MembershipSerializer
+    
 
 
     def create(self, request, *args, **kwargs):
         
         serializer = MembershipSerializer(data=request.data, context={'request':request})
         if serializer.is_valid():
-            id = serializer.data.get('user_id')
-            user = User.objects.get(id=2)
+            id = request.user.id
+            user = User.objects.get(id=id)
             if Membership.objects.filter(user=user, expire_date__gt=timezone.now()).exists():
                 raise serializers.ValidationError(f'You have an active membership that expired on, Would like cancel it, and proceed with new membership')
         
@@ -140,7 +135,7 @@ class ActiveMembershipList(RetrieveAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        qu = Membership.objects.filter(expire_date__gt=timezone.now(), is_pay=True, user=user)
+        qu = Membership.objects.filter(expire_date__gt=timezone.now(), is_pay=True, user=user,is_active=True)
         # print('member',qu)
         return qu
     
@@ -164,9 +159,9 @@ class MembershipRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
     
 
 
-    def get_queryset(self):
-        user = self.request.user
-        id = self.kwargs.get('pk')
-        if user.user_type == UserType.ADMIN:
-            return super().get_queryset()
-        return Membership.objects.filter(user=user,is_pay=True,expire_date__lt=timezone.now())
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     id = self.kwargs.get('pk')
+    #     if user.user_type == UserType.ADMIN:
+    #         return super().get_queryset()
+    #     return Membership.objects.filter(user=user,is_pay=True,expire_date__lt=timezone.now())
