@@ -135,7 +135,7 @@ class ActiveMembershipList(RetrieveAPIView):
 
     def get_queryset(self):
         user = self.request.user
-        qu = Membership.objects.filter(expire_date__gt=timezone.now(), is_pay=True, user=user,is_active=True)
+        qu = Membership.objects.filter(expire_date__gt=timezone.now(), is_pay=True, user=user)
         # print('member',qu)
         return qu
     
