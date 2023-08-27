@@ -1,7 +1,11 @@
 #django rest framework import
 from rest_framework.response import Response
 from accounts.serializers import *
-from rest_framework.generics import ListAPIView,ListCreateAPIView, RetrieveDestroyAPIView, UpdateAPIView, DestroyAPIView
+from rest_framework.generics import (
+    ListAPIView,ListCreateAPIView, 
+    RetrieveDestroyAPIView, UpdateAPIView, 
+    DestroyAPIView
+    )
 from rest_framework.views import APIView
 from rest_framework.validators import ValidationError
 from rest_framework import status
@@ -11,9 +15,9 @@ from django_filters.rest_framework.backends import DjangoFilterBackend
 #django import 
 from django.core.mail import send_mail
 from django.urls import reverse
-from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
-from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.contrib.auth.tokens import default_token_generator, PasswordResetTokenGenerator
+from django.utils.encoding import smart_str, DjangoUnicodeDecodeError
+from django.utils.http import urlsafe_base64_decode
+from django.contrib.auth.tokens import default_token_generator
 from django.contrib.auth import authenticate
 
 #project import 
@@ -177,6 +181,9 @@ class UserApiView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = PaginationWithPageNumber
+
+    def get_queryset(self):
+        return User.objects.defer('date_joined','user_type')
     
     
 

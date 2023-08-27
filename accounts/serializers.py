@@ -1,22 +1,14 @@
 from rest_framework import serializers
-from phonenumber_field.serializerfields import PhoneNumberField
-
-# from djoser.serializers import UserCreateSerializer
-# from settings.serializers import PackageSerializer
-from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
-from rest_framework_simplejwt.views import TokenObtainPairView
 
 
-from accounts.models import User, RealTor,Admin,Notification, Visitor
 
-from realestate.models import RealEstate
+from accounts.models import User,Notification, Visitor
 
 
 class UserSerializer(serializers.ModelSerializer):
-    # package = PackageSerializer()
     class Meta:
         model = User
-        fields = ['id','username','first_name','last_name','image','middel_name','user_type','email','mobile_number','is_active', 'date_joined']
+        fields = ['id','username','first_name','last_name','image','middel_name','user_type','email','mobile_number','is_active']
 
 
 
@@ -24,7 +16,7 @@ class UserEditSerializer(serializers.ModelSerializer):
     # middel_name = serializers.CharField(required=False, allow_null=True)
     class Meta:
         model = User
-        fields = ['id','username','first_name','last_name','image','middel_name','email','mobile_number', 'is_active','user_type']
+        fields = ['id','username','first_name','last_name','image','middel_name','email','mobile_number', 'is_active']
 
     def update(self,instance, validated_data):
         instance.first_name = validated_data.get('first_name', instance.first_name)
@@ -70,7 +62,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         
-        password2 = validated_data.pop('password2')
+        validated_data.pop('password2')
         
 
         return User.objects.create_user(**validated_data)
