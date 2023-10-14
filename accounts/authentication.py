@@ -11,11 +11,11 @@ class BlockedUser(Exception):
 
 class CustomAuthentication(BaseBackend):
     
-    def authenticate(self, request, username=None, password=None, **kwargs):
+    def authenticate(self, request, username=None, password=None, **kwargs): 
         
         cache_key = f"login_attempt:{username}"
         count = cache.get(cache_key,0)
-        
+
         if count >= 3:
             raise serializers.ValidationError(detail={"message":"Sorry,We prevent you to login since you used all attempts. Try After 30 minutes"})
 

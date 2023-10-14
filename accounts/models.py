@@ -15,7 +15,7 @@ class User(AbstractUser):
     
     middel_name = models.CharField(max_length=10, null=True, blank=True)
     email = models.EmailField(max_length=254,unique=True)
-    mobile_number = models.CharField(max_length=14,unique=True, default='+9667381917334', validators=[RegexValidator(r'^\+[0-9]{3}[\s\./0-9]{9}$')])
+    mobile_number = models.CharField(max_length=14,unique=True, default='+9667381917334', validators=[RegexValidator(r'^\+[0-9]{3}[\s\./0-9]{10}$')])
 
     user_type = models.CharField(max_length=10, choices=UserType.choices)
     is_realtor = models.BooleanField(default=False)
