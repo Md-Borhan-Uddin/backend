@@ -77,10 +77,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'RMS.wsgi.application'
 
 
-#corn job
-CORNJOBS = [
-    ('* */24 * * *', 'realestate.tasks.maintains_notification')
-]
+
 
 #django phone number settings
 PHONENUMBER_DB_FORMAT = 'NATIONAL'
@@ -92,12 +89,12 @@ AUTHENTICATION_BACKENDS = [
     # 'axes.backends.AxesStandaloneBackend',
     
 
+    #custom authentication Backend
+    'accounts.authentication.CustomAuthentication',
+
     # Django ModelBackend is the default authentication backend.
     'django.contrib.auth.backends.ModelBackend',
 
-
-    #custom authentication Backend
-    'accounts.authentication.CustomAuthentication',
 ]
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -239,5 +236,13 @@ TWILLIO_SID = os.environ.get('TWILLIO_SID')
 TWILLIO_TOKEN = os.environ.get('TWILLIO_TOKEN')
 TWILLIO_NUMBER = os.environ.get('TWILLIO_NUMBER')
 
-#logger settings
+
+
+#celery settings
+
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
+CELERY_TIMEZONE = 'Asia/Dhaka'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 

@@ -10,18 +10,28 @@ class BlockedUser(Exception):
     pass
 
 class CustomAuthentication(BaseBackend):
+    
     def authenticate(self, request, username=None, password=None, **kwargs):
+        
         cache_key = f"login_attempt:{username}"
-        count = cache.get(cache_key, 0)
+        count = cache.get(cache_key,0)
         
         if count >= 3:
             raise serializers.ValidationError(detail={"message":"Sorry,We prevent you to login since you used all attempts. Try After 30 minutes"})
 
         user = UserModel.objects.filter(username=username).first()
+
         if user and user.check_password(password):
-            print(user)
             cache.delete(cache_key)
             return user
 
         cache.set(cache_key, count + 1, timeout=30*60)  # Cache login attempt for 30 minutes
+        
         return None
+    
+
+    def get_user(self, user_id):
+        try:
+            return UserModel.objects.get(pk=user_id)
+        except UserModel.DoesNotExist:
+            return None
