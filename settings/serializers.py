@@ -144,7 +144,7 @@ class MembershipSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         # pac = Package.objects.get(name=data.get('package_id'))
         user = request.user
-        if Membership.objects.filter(user=user).exists():
+        if Membership.objects.filter(user=user, expire_date__gt=timezone.now()).exists():
             raise serializers.ValidationError(f'You have an active membership that expired on {data["expire_date"]}, Would like cancel it, and proceed with new membership')
         return data
 
