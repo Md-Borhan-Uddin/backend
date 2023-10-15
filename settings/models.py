@@ -35,11 +35,11 @@ class City(models.Model):
 
 
 class Asset(models.Model):
-    brand = models.CharField(max_length=20)
-    type = models.CharField(max_length=20)
+    brand = models.ForeignKey(AssertBrand, on_delete=models.CASCADE)
+    type = models.ForeignKey(AssertType, on_delete=models.CASCADE)
 
     def __str__(self):
-        return f'category :{self.brand} type :{self.type}'
+        return f'category :{self.brand.name} type :{self.type.name}'
     
 
 

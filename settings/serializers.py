@@ -27,11 +27,14 @@ class CountrySerializer(serializers.ModelSerializer):
         return instance
     
 class AssetSerializers(serializers.ModelSerializer):
-    
+    brand = AssertBrandSerializers(read_only=True)
+    type = AssertTypeSerializers(read_only=True)
+    brand_id = serializers.IntegerField(write_only=True)
+    type_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = Asset
-        fields = ['id','brand','type']
+        fields = ['id','brand','type','brand_id','type_id']
     
     
     def create(self, validated_data):
@@ -146,13 +149,12 @@ class MembershipSerializer(serializers.ModelSerializer):
         return data
 
     def create(self, validated_data):
-        print(validated_data)
         request = self.context.get('request')
         package_id = validated_data.pop('package_id')
         validated_data.pop('expire_date')
         package = Package.objects.get(pk=package_id)
         expire_date = self.get_expire_date(package.duration_date,package.duration_month)
-        print(expire_date)
+        
         return Membership.objects.create(user=request.user,package=package,expire_date=expire_date,**validated_data)
     
     
