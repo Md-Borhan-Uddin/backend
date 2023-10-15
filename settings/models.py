@@ -41,6 +41,8 @@ class Asset(models.Model):
     def __str__(self):
         return f'category :{self.brand.name} type :{self.type.name}'
     
+    class Meta:
+        unique_together = ('brand','type')
 
 
 
