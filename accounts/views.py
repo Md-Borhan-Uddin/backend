@@ -4,7 +4,7 @@ from accounts.serializers import *
 from rest_framework.generics import (
     ListAPIView,ListCreateAPIView, 
     RetrieveDestroyAPIView, UpdateAPIView, 
-    DestroyAPIView
+    DestroyAPIView, RetrieveAPIView
     )
 from rest_framework.views import APIView
 from rest_framework.validators import ValidationError
@@ -25,6 +25,7 @@ from accounts.models import Admin,RealTor, User, UserType, Notification
 from utils.pagination import PaginationWithPageNumber
 from accounts.email import ActivationEmail, PasswordResetEmail
 from realestate.models import RealEstate
+from RMS.celery import debug_task
 
 # Create your views here.
 
@@ -178,12 +179,14 @@ class ResetPassword(APIView):
 
 
 class UserApiView(ListAPIView):
-    queryset = User.objects.all()
+    # queryset = User.objects.all()
     serializer_class = UserSerializer
     pagination_class = PaginationWithPageNumber
 
     def get_queryset(self):
-        return User.objects.defer('date_joined','user_type')
+        
+        debug_task.delay(self.request.user.username)
+        return User.objects.defer('date_joined')
     
     
 
@@ -197,12 +200,17 @@ class UpdateUserAPIView(UpdateAPIView):
     #     print(self.request.data)
     #     return super().get_queryset()
 
-class UserDestroyAPIView(DestroyAPIView):
+# class UserDestroyAPIView(DestroyAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+
+
+class UserRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
-class UserRetrieveDestroyAPIView(RetrieveDestroyAPIView):
+class UserRetrieveAPIView(RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
@@ -218,7 +226,6 @@ class LoginAPIView(APIView):
         if serializer.is_valid(raise_exception=True):
             username = serializer.data.get('username')
             password = serializer.data.get('password')
-            
             user = authenticate(username=username, password=password)
             
             if user is not None:
@@ -245,8 +252,11 @@ class UserChangepassword(APIView):
         serializer.is_valid(raise_exception=True)
         
         new_password = serializer.data.get('new_password')
+        
         if new_password:
             user = request.user
+            if user.check_password(new_password):
+                return Response({'message':'You have given new password same as the old one. Give new password'}, status=status.HTTP_400_BAD_REQUEST)
             user.set_password(new_password)
             user.save()
             return Response({'message':'Password change Succesfully'})
