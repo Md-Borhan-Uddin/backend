@@ -184,7 +184,6 @@ class UserApiView(ListAPIView):
 
     def get_queryset(self):
         
-        debug_task.delay(self.request.user.username)
         return User.objects.defer('date_joined')
     
     
