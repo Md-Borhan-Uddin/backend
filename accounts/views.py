@@ -25,7 +25,6 @@ from accounts.models import Admin,RealTor, User, UserType, Notification
 from utils.pagination import PaginationWithPageNumber
 from accounts.email import ActivationEmail, PasswordResetEmail
 from realestate.models import RealEstate
-from RMS.celery import debug_task
 
 # Create your views here.
 
