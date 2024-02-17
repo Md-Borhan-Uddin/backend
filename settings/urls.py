@@ -1,5 +1,20 @@
 from django.urls import path
-from settings.views import *
+from settings.views import (
+    ActiveMembershipList,
+    AssetRetrieveDestroyAPIView,
+    CountryListCreateAPIView,
+    CountryRetrieveDestroyAPIView,
+    CityListCreateAPIView,
+    CityRetrieveDestroyAPIView,
+    AssetListCreateAPIView,
+    InactiveMembershipList,
+    MembershipListCreateAPIView,
+    MembershipRetrieveDestroyAPIView,
+    PackageListCreateAPIView,
+    PackageRetrieveAPIViewByName,
+    PackageRetrieveDestroyAPIView,
+    get_checkoutid
+)
 
 
 
@@ -22,4 +37,5 @@ urlpatterns = [
     path('active-membership/', ActiveMembershipList.as_view()),
     path('inactive-membership/', InactiveMembershipList.as_view()),
     path('membership/<int:pk>/', MembershipRetrieveDestroyAPIView.as_view()),
+    path('checkout-id/<int:package_id>/', get_checkoutid),
 ]

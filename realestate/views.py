@@ -85,8 +85,6 @@ class AssertBrandRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
 
 class RealestateUpdateAPIView(APIView):
     def get(self, request, pk, *args, **kwargs):
-        # if RealEstate.objects.get(id=pk).exist():
-        #     return Response({"message":"Realestate Not Found"}, status=status.HTTP_404_NOT_FOUND)
         try:
             obj = RealEstate.objects.get(id=pk)
             serializer = RealEstateUpdateSerializer(obj, context={"request": request})
@@ -100,15 +98,13 @@ class RealestateUpdateAPIView(APIView):
         serializer = RealEstateSerializer(
             data=request.data, context={"request": request}
         )
-        if serializer.is_valid():
-            re = serializer.save(location="dhaka")
-
-            data = {
-                "message": "RealEstate Save Successfully",
-            }
-            return Response(data, status=status.HTTP_201_CREATED)
-
-        return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        data = {
+            "message": "RealEstate Save Successfully",
+            'data': serializer.data
+        }
+        return Response(data, status=status.HTTP_201_CREATED)
 
 
 class RealestateDeleteAPIView(APIView):
@@ -133,10 +129,7 @@ class RealEstateRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     queryset = RealEstate.objects.all()
     serializer_class = RealEstateSerializer
 
-    # def get_queryset(self):
-    #     print(self.request)
-    #     return super().get_queryset()
-
+   
 class RealEstateDetailAPIView(RetrieveAPIView):
     serializer_class = RealEstateSerializer
 
@@ -165,15 +158,13 @@ class RealEstateAPI(APIView,PaginationWithPageNumber):
             serializer = RealEstateSerializer(
                 data=request.data, context={"request": request}
             )
-            if serializer.is_valid():
-                re = serializer.save()
-
-                data = {
-                    "message": "RealEstate Save Successfully",
-                }
-                return Response(data, status=status.HTTP_201_CREATED)
-
-            return Response(data=serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            data = {
+                "message": "RealEstate Save Successfully",
+                'data':serializer.data
+            }
+            return Response(data, status=status.HTTP_201_CREATED)
         return Response(
             data={"message": "You dont have active membership"},
             status=status.HTTP_406_NOT_ACCEPTABLE,
