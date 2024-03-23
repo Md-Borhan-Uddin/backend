@@ -194,7 +194,6 @@ class ResetPassword(APIView):
         id = smart_str(urlsafe_base64_decode(uid))
         user = User.objects.get(id=id)
 
-        user_token = get_tokens_for_user(user)
         serializers = UserChangePasswordSerializer(data=request.data)
         serializers.is_valid(raise_exception=True)
         password = serializers.data.get("new_password")
