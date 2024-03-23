@@ -33,6 +33,7 @@ class UserEditSerializer(serializers.ModelSerializer):
             "middel_name",
             "email",
             "mobile_number",
+            "user_type",
             "is_active",
         ]
 
