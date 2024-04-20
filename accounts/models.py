@@ -15,7 +15,7 @@ class User(AbstractUser):
     mobile_number = models.CharField(
         max_length=14,
         unique=True,
-        validators=[RegexValidator(r"^\+[0-9]{3}[\s\./0-9]{10}$")],
+        validators=[RegexValidator(r"^\+[0-9]{3}[\s\./0-9]{9}$")],
     )
 
     user_type = models.CharField(max_length=10, choices=UserType.choices)
@@ -41,7 +41,7 @@ class Admin(User):
             self.user_type = UserType.ADMIN
             self.is_staff = True
             self.is_superuser = True
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class RealTorManager(models.Manager):
@@ -58,7 +58,7 @@ class RealTor(User):
     def save(self, *args, **kwargs):
         if self.pk is None:
             self.user_type = UserType.REALTOR
-        return super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class RequestStatus(models.TextChoices):
