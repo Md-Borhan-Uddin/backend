@@ -262,7 +262,7 @@ class LoginAPIView(APIView):
                     token = get_tokens_for_user(user)
                     res = {
                         "message": "Login Successfull",
-                        "user": UserSerializer(user).data,
+                        "user": UserSerializer(user, context={"request":request}).data,
                         "token": token,
                     }
                     return Response(res, status=status.HTTP_200_OK)
