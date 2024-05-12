@@ -9,7 +9,7 @@ from .models import (
     AssertType,
     RealEstate,
     RealEstateType,
-    ScheduleMaintaines,
+    ScheduleMaintains,
 )
 
 
@@ -82,8 +82,7 @@ class RealEstateSerializer(serializers.ModelSerializer):
             "type",
             "property_age_years",
             "property_age_months",
-            "rented",
-            "owner",
+            "authorized",
             "purchasing_cost",
             "cost_currency",
             "cost_date",
@@ -134,35 +133,6 @@ class RealEstateSerializer(serializers.ModelSerializer):
         instance.type = typeobj
         instance.user = validated_data.get(u, instance.user)
 
-        # instance.realestate_id = validated_data.get(
-        #     "realestate_id", instance.realestate_id
-        # )
-        # instance.name = validated_data.get("name", instance.name)
-        # instance.photo = validated_data.get("photo", instance.photo)
-        # instance.country = validated_data.get("country", instance.country)
-        # instance.city = validated_data.get("city", instance.city)
-        # instance.type = validated_data.get("type", instance.type)
-        # instance.property_age_years = validated_data.get("city", instance.city)
-        # instance.property_age_months = validated_data.get(
-        #     "property_age_months", instance.property_age_months
-        # )
-        # instance.rented = validated_data.get("rented", instance.rented)
-        # instance.owner = validated_data.get("owner", instance.owner)
-        # instance.purchasing_cost = validated_data.get(
-        #     "purchasing_cost", instance.purchasing_cost
-        # )
-        # instance.cost_currency = validated_data.get(
-        #     "cost_currency", instance.cost_currency
-        # )
-        # instance.cost_date = validated_data.get("cost_date", instance.cost_date)
-        # instance.purpose = validated_data.get("purpose", instance.purpose)
-        # instance.location = validated_data.get("location", instance.location)
-        # instance.number_of_floors = validated_data.get(
-        #     "number_of_floors", instance.number_of_floors
-        # )
-        # instance.invoice_file = validated_data.get(
-        #     "invoice_file", instance.invoice_file
-        # )
         instance.save()
 
         return instance
@@ -189,8 +159,7 @@ class RealEstateUpdateSerializer(serializers.ModelSerializer):
             "type",
             "property_age_years",
             "property_age_months",
-            "rented",
-            "owner",
+            "authorized",
             "purchasing_cost",
             "cost_currency",
             "cost_date",
@@ -219,40 +188,11 @@ class RealEstateUpdateSerializer(serializers.ModelSerializer):
 
         instance.type = typeobj
         instance.user = u
-
-        # instance.name = validated_data.get("name", instance.name)
-        # instance.photo = validated_data.get("photo", instance.photo.url)
-        # instance.country = validated_data.get("country", instance.country)
-        # instance.city = validated_data.get("city", instance.city)
-        # instance.property_age_years = validated_data.get(
-        #     "property_age_years", instance.property_age_years
-        # )
-        # instance.property_age_months = validated_data.get(
-        #     "property_age_months", instance.property_age_months
-        # )
-        # instance.rented = validated_data.get("rented", instance.rented)
-        # instance.owner = validated_data.get("owner", instance.owner)
-        # instance.purchasing_cost = validated_data.get(
-        #     "purchasing_cost", instance.purchasing_cost
-        # )
-        # instance.cost_currency = validated_data.get(
-        #     "cost_currency", instance.cost_currency
-        # )
-        # instance.cost_date = validated_data.get("cost_date", instance.cost_date)
-        # instance.purpose = validated_data.get("purpose", instance.purpose)
-        # instance.number_of_floors = validated_data.get(
-        #     "number_of_floors", instance.number_of_floors
-        # )
-        # instance.invoice_file = validated_data.get(
-        #     "invoice_file", instance.invoice_file
-        # )
-
         instance.save()
         return instance
 
 
 class AssertSerializer(serializers.ModelSerializer):
-    # real_estate = RealEstateSerializer()
     class Meta:
         model = Assert
         fields = [
@@ -280,14 +220,14 @@ class AssertSerializer(serializers.ModelSerializer):
     #     return super().update(instance, validated_data)
 
 
-class ScheduleMaintainesSerializer(serializers.ModelSerializer):
+class ScheduleMaintainsSerializer(serializers.ModelSerializer):
     real_estate = RealEstateSerializer(read_only=True)
     asset = AssertSerializer(read_only=True)
     real_estate_id = serializers.IntegerField(write_only=True)
     asset_id = serializers.IntegerField(write_only=True)
 
     class Meta:
-        model = ScheduleMaintaines
+        model = ScheduleMaintains
         fields = "__all__"
 
     # def create(self, validated_data):
