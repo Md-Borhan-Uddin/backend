@@ -33,8 +33,7 @@ class RealEstate(models.Model):
     type = models.ForeignKey(RealEstateType, on_delete=models.CASCADE)
     property_age_years = models.CharField(max_length=3)
     property_age_months = models.IntegerField()
-    rented = models.BooleanField()
-    owner = models.BooleanField()
+    authorized = models.CharField(max_length=20, blank=True, default="")
     purchasing_cost = models.DecimalField(max_digits=10, decimal_places=2)
     cost_currency = models.CharField(max_length=50)
     cost_date = models.DateField(auto_now=False, auto_now_add=False)
@@ -88,13 +87,13 @@ class Assert(models.Model):
         return self.name
 
 
-class ScheduleMaintainesStatue(models.TextChoices):
+class ScheduleMaintainsStatue(models.TextChoices):
     ACTIVE = "Active", "Active"
     CANCELE = "Cancele", "Cancele"
     DONE = "Done", "Done"
 
 
-class ScheduleMaintaines(models.Model):
+class ScheduleMaintains(models.Model):
     real_estate = models.ForeignKey(RealEstate, on_delete=models.CASCADE)
     asset = models.ForeignKey(Assert, on_delete=models.SET_NULL, null=True)
     name = models.CharField(max_length=250)
@@ -104,8 +103,8 @@ class ScheduleMaintaines(models.Model):
     is_reminder = models.BooleanField(default=False)
     status = models.CharField(
         max_length=30,
-        choices=ScheduleMaintainesStatue.choices,
-        default=ScheduleMaintainesStatue.ACTIVE,
+        choices=ScheduleMaintainsStatue.choices,
+        default=ScheduleMaintainsStatue.ACTIVE,
     )
     related_invoice = models.FileField(
         upload_to="schedule-invoice", blank=True, null=True
