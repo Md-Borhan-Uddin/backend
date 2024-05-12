@@ -1,9 +1,7 @@
 import os
 from pathlib import Path
 from datetime import timedelta
-import dotenv
 
-dotenv.load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -12,12 +10,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
+# SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG')
 
-ALLOWED_HOSTS = ['api.daimn.com', 'www.api.daimn.com','0.0.0.0', '127.0.0.1']
+
+ALLOWED_HOSTS = ['92.204.137.230','api.daimn.com', 'www.api.daimn.com','0.0.0.0', '127.0.0.1']
 
 
 # Application definition
@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'realestate.apps.RealestateConfig',
     'settings.apps.SettingsConfig',
     
-    'django_filters',
+
     #third party app
     'rest_framework',
     'djoser',
@@ -43,9 +43,8 @@ INSTALLED_APPS = [
     # 'axes',
     "corsheaders",
 ]
-
 MIDDLEWARE = [
-    'django.middleware.gzip.GZipMiddleware',
+     'django.middleware.gzip.GZipMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     "corsheaders.middleware.CorsMiddleware",
@@ -54,11 +53,10 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'axes.middleware.AxesMiddleware',
 ]
 
 ROOT_URLCONF = 'RMS.urls'
-
-AUTH_USER_MODEL = 'accounts.User'
 
 TEMPLATES = [
     {
@@ -79,32 +77,40 @@ TEMPLATES = [
 WSGI_APPLICATION = 'RMS.wsgi.application'
 
 
+#corn job
+CORNJOBS = [
+    ('* */24 * * *', 'realestate.tasks.maintains_notification')
+]
 
 
-#django phone number settings
-PHONENUMBER_DB_FORMAT = 'NATIONAL'
-# PHONENUMBER_DEFAULT_FORMAT = 'NATIONAL'
-PHONENUMBER_DEFAULT_REGION = 'SA'
+AUTH_USER_MODEL = 'accounts.User'
+
 
 AUTHENTICATION_BACKENDS = [
-    # AxesStandaloneBackend should be the first backend in the AUTHENTICATION_BACKENDS list.
-    # 'axes.backends.AxesStandaloneBackend',
-    
 
+    
     #custom authentication Backend
     'accounts.authentication.CustomAuthentication',
+
 
     # Django ModelBackend is the default authentication backend.
     'django.contrib.auth.backends.ModelBackend',
 
+
+
 ]
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'daimnproj',
+        'USER':'daimnprojuser',
+        'PASSWORD':'daimn@daimn.com',
+        'HOST':'localhost',
+        'PORT':5432
     }
 }
 
@@ -133,15 +139,16 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'Asia/Dhaka'
+TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
+
 STATIC_URL = 'static/'
 STATIC_ROOT = 'static'
 MEDIA_URL = 'media/'
@@ -154,6 +161,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 
+#rest framework settings
 
 REST_FRAMEWORK = {
     
@@ -161,17 +169,14 @@ REST_FRAMEWORK = {
         # 'accounts.authentication.CustomAuthentication',
         
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
-    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    # 'PAGE_SIZE': 10
+    )
     
 }
 
-
 #simple jwt
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
-    "REFRESH_TOKEN_LIFETIME": timedelta(hours=4),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
     "ROTATE_REFRESH_TOKENS": False,
     "BLACKLIST_AFTER_ROTATION": False,
     "UPDATE_LAST_LOGIN": False,
@@ -185,7 +190,7 @@ SIMPLE_JWT = {
     "JWK_URL": None,
     "LEEWAY": 0,
 
-    "AUTH_HEADER_TYPES": ("Bearer",),
+    "AUTH_HEADER_TYPES": ("Bearer","JWT"),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
@@ -208,20 +213,24 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainSlidingSerializer",
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
-
-
-DOMAIN = 'localhost:5173'
-
+#djoser setting
+DOMAIN = 'daimn.com'
 
 
 
 CORS_ALLOWED_ORIGINS = [
+    'http://daimn.com',
+    'http://www.daimn.com',
+    'https://www.daimn.com',
+    'https://daimn.com',
     'http://localhost:3000',
-    'http://localhost:5173',
-    # 'http://daimn.com',
-    # 'http://www.daimn.com',
 ]
 
+#django phone number settings
+PHONENUMBER_DB_FORMAT = 'NATIONAL'
+PHONENUMBER_DEFAULT_REGION = 'SA'
+
+# DEFAULT_FROM_EMAIL = "postmaster@sandbox0d9fb193c7504e5c91e0bdb6788dc2e3.mailgun.org"
 
 # email configuration
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
@@ -236,15 +245,4 @@ EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
 #twillio settings
 TWILLIO_SID = os.environ.get('TWILLIO_SID')
 TWILLIO_TOKEN = os.environ.get('TWILLIO_TOKEN')
-TWILLIO_NUMBER = os.environ.get('TWILLIO_NUMBER')
-
-
-
-#celery settings
-
-CELERY_BROKER_URL = 'redis://127.0.0.1:6379'
-CELERY_TIMEZONE = 'Asia/Dhaka'
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
 

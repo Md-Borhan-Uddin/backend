@@ -222,6 +222,7 @@ CORS_ALLOWED_ORIGINS = [
     'http://daimn.com',
     'http://www.daimn.com',
     'https://www.daimn.com',
+    'https://daimn.com',
     'http://localhost:3000',
 ]
 
