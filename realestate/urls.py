@@ -16,8 +16,8 @@ from .views import (
     RealEstateTypeListCreateAPIView,
     RealEstateTypeRetrieveDestroyAPIView,
     RealestateUpdateAPIView,
-    ScheduleMaintainesListAPIView,
-    ScheduleMaintainesRetrieveUpdateDestroyAPIView,
+    ScheduleMaintainsListAPIView,
+    ScheduleMaintainsRetrieveUpdateDestroyAPIView,
 )
 
 urlpatterns = [
@@ -58,13 +58,13 @@ urlpatterns = [
     ),
     path(
         "schedule-maintain/",
-        ScheduleMaintainesListAPIView.as_view(),
-        name="schedule_maintaines",
+        ScheduleMaintainsListAPIView.as_view(),
+        name="schedule_Maintains",
     ),
     path(
         "schedule-maintain/<int:pk>/",
-        ScheduleMaintainesRetrieveUpdateDestroyAPIView.as_view(),
-        name="schedule_maintaines",
+        ScheduleMaintainsRetrieveUpdateDestroyAPIView.as_view(),
+        name="schedule_Maintains",
     ),
     path(
         "search-realestate/",
