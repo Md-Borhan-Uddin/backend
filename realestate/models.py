@@ -1,5 +1,6 @@
 from datetime import datetime
 
+
 from django.db import models
 
 from accounts.models import User
@@ -63,6 +64,8 @@ class AssertType(AbstractCategory):
 
 
 class AssertBrand(AbstractCategory):
+    category = models.ForeignKey(AssertType, on_delete=models.CASCADE, null=True)
+
     def __str__(self):
         return self.name
 

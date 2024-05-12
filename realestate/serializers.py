@@ -29,21 +29,6 @@ class RealEstateTypeSerializers(serializers.ModelSerializer):
         return instance
 
 
-class AssertBrandSerializers(serializers.ModelSerializer):
-    class Meta:
-        model = AssertBrand
-        fields = ["id", "name", "is_active"]
-
-    def create(self, validated_data):
-        return super().create(validated_data)
-
-    def update(self, instance, validated_data):
-        instance.name = validated_data.get("name", instance.name)
-        instance.is_active = validated_data.get("is_active", instance.is_active)
-        instance.save()
-        return instance
-
-
 class AssertTypeSerializers(serializers.ModelSerializer):
     class Meta:
         model = AssertType
@@ -59,6 +44,29 @@ class AssertTypeSerializers(serializers.ModelSerializer):
         # instance.is_active = validated_data.get("is_active", instance.is_active)
         instance.save()
         return instance
+
+
+class AssertBrandSerializers(serializers.ModelSerializer):
+    # category = AssertTypeSerializers()
+    class Meta:
+        model = AssertBrand
+        fields = ["id", "category", "name", "is_active"]
+
+    def create(self, validated_data):
+        return super().create(validated_data)
+
+    def update(self, instance, validated_data):
+        for key, val in validated_data.items():
+            setattr(instance, key, val)
+        instance.save()
+        return instance
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data["category"] = AssertType.objects.filter(id=instance.category_id).values(
+            "id", "name"
+        ).first()
+        return data
 
 
 class RealEstateSerializer(serializers.ModelSerializer):
