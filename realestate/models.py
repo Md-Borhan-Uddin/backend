@@ -38,7 +38,7 @@ class RealEstate(models.Model):
     cost_currency = models.CharField(max_length=50)
     cost_date = models.DateField(auto_now=False, auto_now_add=False)
     purpose = models.CharField(max_length=50)
-    number_of_floors = models.IntegerField()
+    number_of_floors = models.CharField(max_length=4, null=True, blank=True)
     invoice_file = models.FileField(upload_to="realestate/file", null=True, blank=True)
     create = models.DateTimeField(auto_now=False, auto_now_add=True)
     update = models.DateTimeField(auto_now=True, auto_now_add=False)
