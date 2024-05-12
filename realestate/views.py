@@ -1,4 +1,4 @@
-#rest framework import
+# rest framework import
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status
@@ -11,23 +11,38 @@ from rest_framework.generics import (
 )
 from rest_framework import serializers
 
-#third party import
+# third party import
 from django_filters.rest_framework import DjangoFilterBackend
 
-#django import 
+# django import
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Count
 from django.utils import timezone
 
-#project import 
+# project import
 from utils.pagination import PaginationWithPageNumber
 from accounts.models import UserType
-from .serializers import *
-from .models import *
+from .serializers import (
+    AssertBrandSerializers,
+    AssertSerializer,
+    AssertTypeSerializers,
+    RealEstateSerializer,
+    RealEstateTypeSerializers,
+    RealEstateUpdateSerializer,
+    ScheduleMaintainsSerializer,
+    UserSerializer,
+)
+from .models import (
+    Assert,
+    AssertBrand,
+    AssertType,
+    RealEstate,
+    RealEstateType,
+    ScheduleMaintains,
+)
 from settings.models import Membership
-from settings.tasks import membership_notification
 from realestate.tasks import maintains_notification
-from settings.serializers import CountrySerializer,CitySerializer
+from settings.serializers import CountrySerializer, CitySerializer
 
 # Create your views here.
 
@@ -40,14 +55,27 @@ class RealEstateSearchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = RealEstate
-        fields = ['id','realestate_id','user','name','photo','country','city',
-                  'type','property_age_years','property_age_months','rented',
-                  'owner','purchasing_cost','cost_currency','cost_date','purpose','location',
-                  'number_of_floors','create','update']
-    
-    
-   
-    
+        fields = [
+            "id",
+            "realestate_id",
+            "user",
+            "name",
+            "photo",
+            "country",
+            "city",
+            "type",
+            "property_age_years",
+            "property_age_months",
+            "authorized",
+            "purchasing_cost",
+            "cost_currency",
+            "cost_date",
+            "purpose",
+            "location",
+            "number_of_floors",
+            "create",
+            "update",
+        ]
 
 
 class RealEstateTypeListCreateAPIView(ListCreateAPIView):
@@ -100,10 +128,7 @@ class RealestateUpdateAPIView(APIView):
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        data = {
-            "message": "RealEstate Save Successfully",
-            'data': serializer.data
-        }
+        data = {"message": "RealEstate Save Successfully", "data": serializer.data}
         return Response(data, status=status.HTTP_201_CREATED)
 
 
@@ -129,41 +154,46 @@ class RealEstateRetrieveDestroyAPIView(RetrieveDestroyAPIView):
     queryset = RealEstate.objects.all()
     serializer_class = RealEstateSerializer
 
-   
+
 class RealEstateDetailAPIView(RetrieveAPIView):
     serializer_class = RealEstateSerializer
 
     def get_object(self):
-        id = self.request.query_params.get('realestate_id')
-        floor_number = self.request.query_params.get('number_of_floors')
+        id = self.request.query_params.get("realestate_id")
+        floor_number = self.request.query_params.get("number_of_floors")
         if id:
             return RealEstate.objects.get(realestate_id=id)
         if floor_number:
             return RealEstate.objects.filter(number_of_floors=floor_number).first()
 
-class RealEstateAPI(APIView,PaginationWithPageNumber):
+
+class RealEstateAPI(APIView, PaginationWithPageNumber):
     # pagination_class = PaginationWithPageNumber
     def get(self, request, usertype, *args, **kwargs):
         obj = RealEstate.objects.all()
-        
+
         if usertype != UserType.ADMIN:
             obj = RealEstate.objects.filter(user=request.user.id)
 
-        results = self.paginate_queryset(obj,request,view=self)
-        serializer = RealEstateSerializer(results, many=True, context={"request": request})
+        results = self.paginate_queryset(obj, request, view=self)
+        serializer = RealEstateSerializer(
+            results, many=True, context={"request": request}
+        )
         return self.get_paginated_response(serializer.data)
 
     def post(self, request, *args, **kwargs):
-        if request.user.user_type==UserType.ADMIN or Membership.objects.filter(user=request.user.id, expire_date__gt=timezone.now(), is_pay=True).exists():
+        if (
+            request.user.user_type == UserType.ADMIN
+            or Membership.objects.filter(
+                user=request.user.id, expire_date__gt=timezone.now(), is_pay=True
+            ).exists()
+        ):
             serializer = RealEstateSerializer(
                 data=request.data, context={"request": request}
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            data = {
-                "message": "RealEstate Save Successfully",
-                'data':serializer.data
-            }
+            data = {"message": "RealEstate Save Successfully", "data": serializer.data}
             return Response(data, status=status.HTTP_201_CREATED)
         return Response(
             data={"message": "You dont have active membership"},
@@ -185,7 +215,7 @@ class AssetListAPIView(ListCreateAPIView):
     serializer_class = AssertSerializer
 
     def get_queryset(self):
-        if self.request.user.user_type==UserType.ADMIN:
+        if self.request.user.user_type == UserType.ADMIN:
             return super().get_queryset()
         return Assert.objects.filter(real_estate__user=self.request.user)
 
@@ -194,12 +224,19 @@ class RealestateSearchAPIView(ListAPIView):
     queryset = RealEstate.objects.all()
     serializer_class = RealEstateSearchSerializer
     filter_backends = (DjangoFilterBackend,)
-    filterset_fields = ('id','name','user__date_joined','country','city',
-          'type',
-          'number_of_floors',
-          'user__first_name',
-          'user__last_name',
-          'user__username')
+    filterset_fields = (
+        "id",
+        "name",
+        "user__date_joined",
+        "country",
+        "city",
+        "type",
+        "number_of_floors",
+        "user__first_name",
+        "user__last_name",
+        "user__username",
+    )
+
     def get_queryset(self):
         print(self.request.query_params)
         return super().get_queryset()
@@ -209,22 +246,23 @@ class AssetRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
     queryset = Assert.objects.all()
     serializer_class = AssertSerializer
 
-class ScheduleMaintainesListAPIView(ListCreateAPIView):
-    # queryset = ScheduleMaintaines.objects.all()
-    serializer_class = ScheduleMaintainesSerializer
+
+class ScheduleMaintainsListAPIView(ListCreateAPIView):
+    # queryset = ScheduleMaintains.objects.all()
+    serializer_class = ScheduleMaintainsSerializer
     pagination_class = PaginationWithPageNumber
 
     def get_queryset(self):
         maintains_notification()
         obj = None
         user = self.request.user
-        obj = ScheduleMaintaines.objects.all()
+        obj = ScheduleMaintains.objects.all()
         if user.user_type != "Admin":
-            obj = ScheduleMaintaines.objects.filter(real_estate__user=user)
+            obj = ScheduleMaintains.objects.filter(real_estate__user=user)
 
         return obj
 
 
-class ScheduleMaintainesRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
-    queryset = ScheduleMaintaines.objects.all()
-    serializer_class = ScheduleMaintainesSerializer
+class ScheduleMaintainsRetrieveUpdateDestroyAPIView(RetrieveUpdateDestroyAPIView):
+    queryset = ScheduleMaintains.objects.all()
+    serializer_class = ScheduleMaintainsSerializer
