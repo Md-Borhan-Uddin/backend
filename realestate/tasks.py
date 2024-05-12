@@ -2,13 +2,13 @@ from django.utils import timezone
 
 from accounts.models import Notification
 from realestate.emails import MaintainceReminderEmail
-from realestate.models import ScheduleMaintaines, ScheduleMaintainesStatue
+from realestate.models import ScheduleMaintains, ScheduleMaintainsStatue
 from RMS import settings
 from utils.twillo_client import TwilloClient
 
 
 def maintains_notification():
-    object = ScheduleMaintaines.objects.filter(status=ScheduleMaintainesStatue.ACTIVE)
+    object = ScheduleMaintains.objects.filter(status=ScheduleMaintainsStatue.ACTIVE)
 
     twillo = TwilloClient(settings.TWILLIO_SID, settings.TWILLIO_TOKEN)
     for item in object:
