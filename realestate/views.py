@@ -108,7 +108,7 @@ class AssertBrandListCreateAPIView(ListCreateAPIView):
     def get_queryset(self):
         id = self.request.query_params.get("type")
         if id:
-            return AssertBrand.objects.filter(category_id=id)
+            return AssertBrand.objects.filter(category_id=id, is_active=True)
         return super().get_queryset()
 
 
