@@ -104,6 +104,12 @@ class AssertTypeRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
 class AssertBrandListCreateAPIView(ListCreateAPIView):
     queryset = AssertBrand.objects.all()
     serializer_class = AssertBrandSerializers
+    
+    def get_queryset(self):
+        id = self.request.query_params.get("type")
+        if id:
+            return AssertBrand.objects.filter(category_id=id)
+        return super().get_queryset()
 
 
 class AssertBrandRetrieveDestroyAPIView(RetrieveUpdateDestroyAPIView):
